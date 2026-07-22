@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+    Soal 3.1 — Counter dengan Closure (BUKAN variable global)
+    Ulangi soal 2.3, tapi sekarang state counter TIDAK BOLEH 
+    pakai variable global. Gunakan pola closure seperti 
+    createCounter() di catatanmu:
+
+    function createCounter() {
+        let count = 0;
+        return function (step = 1) {
+            count += step;
+            return count;
+        };
+    }
+
+    📌 Ini soal kunci: buktikan ke diri sendiri kenapa 
+    closure lebih aman dibanding variable global (coba 
+    bikin 2 counter independen di halaman yang sama, dan 
+    lihat mereka nggak saling ganggu).
+    -->
+
+    <span id="counter">0</span>
+    <button id="tambah">+1</button>
+    <button id="tambahlima">+5</button>
+    <button id="kurang">-1</button>
+    <button id="kuranglima">-5</button>
+
+    <!-- tombol tes lain -->
+    <button id="tambahseratus">+100</button>
+
+    <script type="text/javascript">
+      const review = document.getElementById("counter");
+      const tambah = document.getElementById("tambah");
+      const tambahlima = document.getElementById("tambahlima");
+      const kurang = document.getElementById("kurang");
+      const kuranglima = document.getElementById("kuranglima");
+
+      const tambahseratus = document.getElementById("tambahseratus");
+
+      function createCounter() {
+        let angka = 0;
+
+        return function (action, value = 1) {
+          if (action === "tambah") {
+            angka += value;
+          } else if (action === "kurang") {
+            angka -= value;
+          }
+
+          review.textContent = angka;
+        };
+      }
+
+      const counter = createCounter();
+      tambah.addEventListener("click", () => counter("tambah"));
+      tambahlima.addEventListener("click", () => counter("tambah", 5));
+
+      kurang.addEventListener("click", () => counter("kurang"));
+      kuranglima.addEventListener("click", () => counter("kurang", 5));
+
+      const counter2 = createCounter();
+      tambahseratus.addEventListener("click", () => counter2("tambah", 100));
+    </script>
+  </body>
+</html>

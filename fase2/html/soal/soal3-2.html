@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+    Soal 3.2 — Rate Limiter di Tombol Submit
+    Buat tombol "Kirim". Gunakan pola 
+    createRateLimiter(maxCalls) dari catatanmu supaya 
+    tombol itu hanya bisa diklik maksimal 3 kali, setelah 
+    itu tombol otomatis di-disable (pakai 
+    setAttribute('disabled', true)) dan munculkan pesan 
+    "Limit tercapai" di halaman.
+    -->
+
+    <button id="btn-otp">Kirim OTP</button>
+    <p id="review"></p>
+
+    <script type="text/javascript">
+      const btn = document.getElementById("btn-otp");
+      const review = document.getElementById("review");
+
+      function createRateLimiter(maxCalls, timeStops) {
+        let counter = 0;
+
+        return function (aksiFungsi) {
+          // jika sudah mencapai batas maksimal
+          if (counter >= maxCalls) {
+            btn.disabled = true;
+            review.textContent = "Limit tercapai";
+
+            // reset setelah 10 detik
+            setTimeout(() => {
+              counter = 0;
+              btn.disabled = false;
+              review.textContent = "";
+              alert("Silahkan coba kirim OTP kembali...");
+            }, timeStops);
+            return;
+          }
+
+          counter++;
+          review.textContent = `OTP Terkirim. Percobaan ke-${counter}`;
+          aksiFungsi();
+        };
+      }
+
+      const otp = createRateLimiter(3, 10000);
+      btn.addEventListener("click", () => {
+        otp(() => {
+          console.log("OTP Terkirim...");
+        });
+      });
+    </script>
+  </body>
+</html>

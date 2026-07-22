@@ -1,0 +1,163 @@
+Event Handling 
+
+1. Tiga cara memasang Event Handler 
+    cara 1: Inline HTML Attribute (Cara Lama / Tidak Direkomendasikan)
+        - onclick. berikut contoh penggunaan:
+            <button onclick="panggilSaya()">Klik Saya</button>
+
+            <button onclick="alert('Tombol berhasil diklik!')">Klik Langsung</button>
+
+            <script>
+                function panggilSaya() {
+                    alert("Halo! Terima kasih sudah mengklik.");
+                }
+            </script>
+
+        - onchange. berikut contoh penggunaan:
+            <label for="pilihBuah">Pilih buah kesukaanmu:</label>
+            <select id="pilihBuah" onchange="tampilkanPilihan()">
+                <option value="Apel">Apel</option>
+                <option value="Mangga">Mangga</option>
+                <option value="Pisang">Pisang</option>
+            </select>
+
+            <p id="hasilAksi"></p>
+
+            <script>
+                function tampilkanPilihan() {
+                    // Mengambil nilai dari select option
+                    let buah = document.getElementById("pilihBuah").value;
+                    document.getElementById("hasilAksi").innerText = "Kamu memilih buah: " + buah;
+                }
+            </script>
+
+        - onmouseover & onmouseout. berikut contoh penggunaan:
+            - onmouserover: terjadi saat kursor masuk/menyentuh area elemen
+            - onmouseout: terjadi saat kursor keluar/meninggalkan area elemen 
+            <div id="kotak" 
+                onmouseover="ubahWarnaMasuk()" 
+                onmouseout="ubahWarnaKeluar()" 
+                style="width: 200px; height: 100px; background-color: lightblue; text-align: center; line-height: 100px; border: 1px solid #333;">
+            Sentuh Saya!
+            </div>
+
+            <script>
+                let kotak = document.getElementById("kotak");
+
+                function ubahWarnaMasuk() {
+                    kotak.style.backgroundColor = "lightgreen";
+                    kotak.innerText = "Kursor Masuk!";
+                }
+
+                function ubahWarnaKeluar() {
+                    kotak.style.backgroundColor = "lightblue";
+                    kotak.innerText = "Kursor Keluar!";
+                }
+            </script>
+
+
+        - onsubmit. berikut contoh penggunaan:
+            catatan: biasanya kita menggunakan event.preventDefault() agar halaman tidak otomatis melakukan refresh saaat 
+            form dikirim, sehingga kita bisa memproses datanya dulu dengan javascript
+            <form onsubmit="prosesForm(event)">
+                <label>Masukkan Nama:</label>
+                <input type="text" id="namaUser" required>
+                <button type="submit">Kirim Data</button>
+            </form>
+
+            <script>
+                function prosesForm(event) {
+                    // Mencegah halaman reload otomatis
+                    event.preventDefault(); 
+                    
+                    let nama = document.getElementById("namaUser").value;
+                    alert("Form berhasil dikirim! Halo, " + nama);
+                }
+            </script>
+
+    cara 2: Element Method / Event Handler Properti
+        ditangkap dulu elemennya di variable, lalu masangkan fungsi ke properti on.<event> dari variable 
+        const tombol = document.querySelector('#myButton');
+
+        tombol.onclick = function() {
+            console.log('Tombol diklik!');
+        };
+
+    cara 3: addEventListener() (Cara Modern & Sangat Direkomendasikan)
+        kita bisa memasang lebih dari satu fungsi untuk satu event yang sama di satu elemen 
+        sintaks dasar nya:
+        element.addEventListener('nama_event', function());
+
+        contoh penggunaan:
+        <button id="btnModern">Klik Saya (Modern)</button>
+
+        <script>
+            const tombol = document.getElementById('btnModern');
+
+            // Fungsi pertama
+            function sapaan() {
+                alert("Halo dari addEventListener!");
+            }
+
+            // Fungsi kedua
+            function logAksi() {
+                console.log("Tombol modern telah diklik.");
+            }
+
+            // Memasang beberapa event handler sekaligus pada satu tombol
+            tombol.addEventListener('click', sapaan);
+            tombol.addEventListener('click', logAksi);
+        </script>
+
+2. Mengenal Event Object (e atau event)
+    Ketika sebuah event terjadi (misal: klik, ketik keyboard, submit), javascript otomatis mengirimkan sebuah objek bernama Event Object 
+    ke dalam funsi handler.
+
+    Properti penting dalam event Event Object:
+        - e.target = Mengetahui elemen HTML mana yang memicu event tersebut.
+        - e.type = Mengetahui jenis event yang sedang terjadi (misal: 'click', 'keydown').
+        - e.key = (Khusus event keyboard) Mengetahui tombol apa yang ditekan oleh pengguna.
+        - e.preventDefault() = Metode untuk membatalkan aksi bawaan browser (seperti yang kamu catat pada event onsubmit agar halaman tidak 
+        refresh).
+
+    contoh penggunaan:
+    <button id="deteksiTombol">Klik untuk Cek Target</button>
+    <input type="text" id="inputKeyboard" placeholder="Ketik sesuatu di sini...">
+
+    <script>
+        // 1. Mendeteksi elemen target klik
+        document.getElementById('deteksiTombol').addEventListener('click', function(e) {
+            console.log("Jenis event: " + e.type); // Output: click
+            console.log("Elemen yang diklik: ", e.target); // Output: <button>...
+        });
+
+        // 2. Mendeteksi tombol keyboard yang ditekan
+        document.getElementById('inputKeyboard').addEventListener('keydown', function(e) {
+            console.log("Kamu menekan tombol: " + e.key); 
+        });
+    </script>
+
+3. Jenis - jenis event yang sering digunakan 
+    daftar event bawaan javascript yang paling sering dipakai di dunia kerja:
+        A. Mouse Events:
+            - click
+            - dblclick
+            - mouseenter / mouseover
+            - mouseleave / mouseout
+
+        B. Keyboard Events
+            - keydown: Terjadi saat tombol keyboard mulai ditekan ke bawah.
+            - keyup: Terjadi saat tombol keyboard dilepas setelah ditekan.
+            - keypress: Terjadi saat karakter diketik (sudah mulai ditinggalkan, lebih disarankan pakai keydown).
+
+        C. Form Events 
+            - submit: erjadi saat formulir dikirim (biasanya lewat tombol submit).
+            - change: Terjadi saat nilai elemen form berubah (sering dipakai di <select>, <input type="checkbox">).
+            - focus: Terjadi saat elemen form mulai aktif atau diklik oleh user (kursor aktif di sana).
+            - blur: Kebalikan dari focus, terjadi saat user pindah/meninggalkan elemen form tersebut.
+
+        D. Document / Window Events 
+            - DMContentLoad: Terjadi saat seluruh struktur HTML sudah selesai dibaca dan dimuat oleh browser, tanpa harus menunggu 
+            gambar atau CSS selesai di-download. Ini waktu paling aman untuk menjalankan kode JS kita.
+            - resize: Terjadi saat ukuran jendela browser diubah (di-resize).
+            - scroll: Terjadi saat halaman web digulung ke atas atau ke bawah.

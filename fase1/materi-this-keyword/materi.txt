@@ -1,0 +1,142 @@
+Aturan utama THIS keyword:
+this ditentukan oleh BAGAIMANA function dipanggil (call-site), BUKAN di
+mana function ditulis
+
+4 Aturan binding yang menentukan nilai this. 
+
+1. Default binding - dipanggil sendirian
+// code 
+function showThis() {
+    console.log(this);
+};
+
+showThis(); / di browser: Window object. Di strict mode/module: undefined
+Tidak ada apapun di kiri tanda kurung saat dipanggil → this jatuh ke 
+default (global object, atau undefined di strict mode).
+
+2. Implicit binding - dipanggil lewat object
+// code
+const user = {
+    name: "Sinta",
+    greet() {
+        console.log(`Halo, saya ${this.name}`);
+    };
+};
+user.greet(); // "Halo, saya Sinta" -> this = user, karena ada "user." di kiri
+
+Contoh dunia nyata — ini yang paling sering bikin bug, saat method dilepas dari object-nya:
+// Skenario umum: pasang method sebagai event handler
+button.addEventListener("click", user.greet);
+// Saat di-klik: "Halo, saya undefined"
+// KENAPA? karena addEventListener memanggilnya seperti: user.greet() TANPA "user."
+// jadi yang dilihat browser saat eksekusi cuma: greet() -> default binding, this != user
+
+Ini sebabnya kamu sering lihat kode begini di real-world apps (misal React class 
+component sebelum hooks):
+// code
+class Button {
+    constructor() {
+        this.label = "Submit";
+        // bind manual supaya 'this' tetap nempel ke instance, walau method dilepas
+        this.handleClick = this.handleClick.bind(this);
+    }
+    handleClick() {
+        console.log(this.label);
+    }
+}
+
+3. Explicit binding - call, apply, bind 
+Kamu bisa paksa nilai this secara manual.
+// code
+function introduce(city) {
+  console.log(`Saya ${this.name} dari ${city}`);
+}
+
+const person1 = { name: "Andi" };
+const person2 = { name: "Budi" };
+
+introduce.call(person1, "Jakarta"); // "Saya Andi dari Jakarta"
+introduce.call(person2, "Bandung"); // "Saya Budi dari Bandung"
+
+bind mirip call, tapi tidak langsung dieksekusi — dia return function 
+baru dengan this yang sudah terkunci permanen. Ini solusi resmi 
+untuk masalah di poin 2:
+// code
+const boundGreet = user.greet.bind(user);
+button.addEventListener("click", boundGreet);
+// Sekarang aman -> this akan SELALU = user, walau dipanggil tanpa "user."
+
+Contoh dunia nyata — kamu pasti sering lihat ini saat kerja dengan 
+array-like object atau borrowing method:
+// code 
+function sum() {
+  // arguments adalah array-like, bukan array asli, jadi tidak punya method reduce
+  const args = Array.prototype.slice.call(arguments);
+  return args.reduce((a, b) => a + b, 0);
+}
+console.log(sum(1, 2, 3)); // 6
+
+4. Arrow function - TIDAK punya this sendiri
+Ini aturan yang paling beda. Arrow function tidak ikut 3 aturan di 
+atas sama sekali. Dia "mencuri" this dari scope tempat ia ditulis 
+(lexical scope), titik, tidak bisa diubah meskipun dipakai .call()/.bind().
+
+// code
+const timer = {
+  seconds: 0,
+  start() {
+    console.log(this); // this = timer (implicit binding, karena dipanggil timer.start())
+    
+    setInterval(function () {
+      this.seconds++; // BUG! `this` di sini BUKAN timer
+      console.log(this.seconds); // NaN, karena `this` adalah Window/undefined
+    }, 1000);
+  }
+};
+
+Kenapa bug? Karena setInterval memanggil function callback-nya 
+sendirian (tanpa timer. di depan) → balik ke aturan 1 (default binding). 
+Solusinya, pakai arrow function supaya dia "mewarisi" this dari start() 
+yang sudah benar (timer):
+const timer = {
+  seconds: 0,
+  start() {
+    setInterval(() => {
+      this.seconds++; // sekarang `this` = timer, karena arrow function ambil this dari start()
+      console.log(this.seconds); // 1, 2, 3, ...
+    }, 1000);
+  }
+};
+
+timer.start();
+
+📌 Ini pola yang akan kamu pakai TERUS di JavaScript modern — setiap 
+kali ada callback (setTimeout, setInterval, event listener di dalam method, 
+promise .then()), arrow function biasanya pilihan paling aman karena 
+otomatis "ikut" this dari method pembungkusnya.
+
+-----------------------------------------------------------------------
+Kenapa ini krusial sebelum OOP
+Di class, method-method yang kamu tulis kerjanya sama persis dengan 
+implicit binding (aturan 2):
+
+// code
+class Car {
+    constructor(brand) {
+        this.brand = brand;
+        this.speed = 0;
+    }
+    accelerate(amount) {
+        this.speed += amount; // this = instance, karena dipanggil sebagai myCar.accelerate()
+    }
+}
+
+const myCar = new Car("Toyota");
+myCar.accelerate(10); // OK, this = myCar
+
+const fn = myCar.accelerate;
+fn(10); // BUG! this bukan myCar lagi -> persis kasus soal kemarin
+
+Jadi semua yang kamu pelajari soal this hari ini, akan langsung kepakai 100% 
+saat kita masuk ke class nanti — nggak ada konsep baru, cuma konteksnya
+berubah jadi instance object.

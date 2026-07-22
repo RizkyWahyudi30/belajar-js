@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Belajar DOM JS</title>
+    <style>
+      /* CSS */
+      .box {
+        width: 200px;
+        height: 100px;
+        background-color: lightblue;
+        transition: all 0.3s;
+      }
+
+      .hijau {
+        background-color: lightgreen;
+      }
+
+      .mode-gelap {
+        background-color: #333;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- MATERI 1 : DOM BASIC -->
+    <!-- <p class="item1">Ini item1 teks pertama</p>
+    <p class="item1">Ini item1 teks kedua</p>
+
+    <p id="item2">Ini item2 teks pertama</p>
+    <p id="item2">Ini item2 teks kedua</p>
+
+    <div id="keranjang">
+      <button class="button-hapus">Hapus item 1</button>
+      <button class="button-hapus">Hapus item 2</button>
+    </div> -->
+
+    <!-- MATERI 2 : DOM MANIP -->
+    <p id="judul"></p>
+
+    <img
+      src="../assets/img.png"
+      alt="ini image contoh"
+      style="width: 30%"
+      class="image"
+    />
+
+    <!-- MATERI 3 : CLASSLIST MANIP -->
+    <div id="kotak" class="box">Kotak Interaktif</div>
+
+    <button id="btnTambah">Tambah Hijau</button>
+    <button id="btnHapus">Hapus Hijau</button>
+    <button id="btnToggle">Ganti Tema (Gelap/Terang)</button>
+    <button id="btnCek">Cek Apakah Ada Class 'box'?</button>
+
+    <!-- MATERI 4 : DOM NODES -->
+    <div id="container">
+      <p id="paragraf-dua">Paragraf Dua (Tengah)</p>
+    </div>
+
+    <ul id="daftar-buah">
+      <li id="apel">Apel</li>
+      <li id="mangga">Mangga</li>
+    </ul>
+
+    <!-- MATERI 5 : DOM TRAVERSAL -->
+    <div class="keluarga">
+      <div id="kakek">
+        <div id="orangtua">
+          <p id="anak-pertama">Kakak</p>
+          <p id="anak-kedua">Kamu</p>
+          <p id="anak-ketiga">Adik</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERI 6 : DOM EVENTS -->
+    <button id="tombol-klik">Klik saya</button>
+    <div id="box" style="width: 100px; height: 100px; background: lightblue">
+      Arahkan Mouse
+    </div>
+
+    <input type="text" id="input-nama" placeholder="Ketik namamu..." />
+    <p id="pesan"></p>
+
+    <input type="text" id="input-email" placeholder="Masukkan email..." />
+
+    <form action="" id="login-form">
+      <input type="text" placeholder="Username" />
+      <button id="submit">Sign In</button>
+    </form>
+
+    <script type="text/javascript">
+      // <!-- MATERI 1 : DOM BASIC -->
+      const item1 = document.querySelector(".item1"); // ambil 1 elemen by id
+      // console.log(item1); // mengambil elemen paling pertama
+
+      const item2 = document.querySelectorAll("#item2"); // ambil semua elemen dengan tag tsb
+      // console.log(item2); // berbentuk node list, cara manggil nya dengan di looping
+      item2.forEach(function (item) {
+        // console.log(item);
+      });
+
+      /*
+      📌 Beda penting: getElementsByClassName hasilnya live (otomatis
+      update kalau DOM berubah), sedangkan querySelectorAll / querySelector
+      hasilnya static (snapshot, tidak otomatis update). Ini sering jadi
+      sumber bug kalau nggak disadari.
+      */
+
+      const liveTombol = document.getElementsByClassName("button-hapus");
+      const staticTombol = document.querySelectorAll(".button-hapus");
+
+      // console.log(liveTombol.length);
+      // console.log(staticTombol.length);
+
+      // tambahkan 1 tombol baru via js
+      const tombolBaru = document.createElement("button");
+      tombolBaru.className = "button-hapus";
+      tombolBaru.innerText = "Hapus item 3";
+      // document.getElementById("keranjang").appendChild(tombolBaru);
+
+      // cek lagi jumlah nya
+      // console.log(liveTombol.length);
+      // console.log(staticTombol.length);
+
+      // -------------------------------------------------------------------
+
+      // <!-- MATERI 2 : DOM MANIP -->
+      // - mengubah content
+      const judulHalaman = document.querySelector("#judul");
+
+      // judulHalaman.innerHTML = "<b>Judul Baru</b>";
+      // judulHalaman.innerText = "Judul baru";
+      judulHalaman.textContent = "Judul use text content";
+
+      // 📌 Aturan mentor: kalau cuma mau ubah teks biasa, selalu pakai
+      // textContent, bukan innerHTML. Alasan keamanan (XSS) dan performa.
+
+      // - mengubah attribute
+      const img = document.querySelector(".image");
+
+      img.setAttribute("src", "assets/img2.jpg");
+      img.getAttribute("src");
+      img.removeAttribute("alt");
+
+      // - mengubah style
+      judulHalaman.style.color = "red";
+      judulHalaman.style.backgroundColor = "yellow";
+
+      // -------------------------------------------------------------------
+
+      // <!-- MATERI 3 : CLASSLIST MANIP -->
+      const kotak = document.getElementById("kotak");
+
+      const btnTambah = document.getElementById("btnTambah");
+      btnTambah.addEventListener("click", function () {
+        kotak.classList.add("hijau");
+      });
+
+      const btnHapus = document.getElementById("btnHapus");
+      btnHapus.addEventListener("click", function () {
+        kotak.classList.remove("hijau");
+      });
+
+      const btnToggle = document.getElementById("btnToggle");
+      btnToggle.addEventListener("click", function () {
+        kotak.classList.toggle("mode-gelap");
+      });
+
+      const btnCek = document.getElementById("btnCek");
+      btnCek.addEventListener("click", function () {
+        if (kotak.classList.contains("box")) {
+          alert("Ya! Kotak ini memiliki class 'box'.");
+        } else {
+          alert("Tidak, class 'box' tidak ditemukan.");
+        }
+      });
+
+      // -------------------------------------------------------------------
+
+      // <!-- MATERI 4 : DOM NODES -->
+      const boxBaru = document.createElement("div");
+      const teksBaru = document.createTextNode("Halo, ini adalah elemen baru");
+
+      boxBaru.appendChild(teksBaru);
+
+      // - menyisipkan elemen ke layar
+      const container = document.getElementById("container");
+      // cara lama
+      const paragrafDua = document.getElementById("paragraf-dua");
+
+      const pSatu = document.createElement("p");
+      pSatu.innerText = "Paragraf Satu (Atas)";
+
+      const pTiga = document.createElement("p");
+      pTiga.innerText = "Paragraf Tiga (Bawah)";
+
+      container.insertBefore(pSatu, paragrafDua);
+      container.appendChild(pTiga);
+
+      // cara baru
+      const teksAwal = document.createElement("span");
+      teksAwal.innerText = "✨ [AWAL] ";
+
+      const teksAkhir = document.createElement("span");
+      teksAkhir.innerText = " [AKHIR] ✨";
+
+      container.prepend(teksAwal);
+      container.append(teksAkhir);
+
+      // - menghapus elemen
+      const list = document.getElementById("daftar-buah");
+      // cara lama
+      const buahApel = document.getElementById("apel");
+
+      list.removeChild(buahApel);
+
+      // cara baru
+      const buahMangga = document.getElementById("mangga");
+      buahMangga.remove();
+
+      // -------------------------------------------------------------------
+
+      // <!-- MATERI 5 : DOM TRAVERSAL -->
+
+      // - mencari parent
+      // mulai dari kamu
+      const kamu = document.getElementById("anak-kedua");
+
+      // mencari orang tua
+      const orangtua1 = kamu.parentElement;
+      console.log(orangtua1.id); // output: orangtua
+
+      // bisa dilakukan berantai (chaining) untuk mencari kakek
+      const kakek = kamu.parentElement.parentElement;
+      console.log(kakek.id); // output kakek
+
+      // - mencari child
+      const orangtua2 = document.getElementById("orangtua");
+
+      // 1. mengambil semua anak
+      console.log(orangtua2.children.length); // output: 3
+      console.log(orangtua2.children[0].innerText); // output: kakak
+
+      // 2. mengambil anak pertama langsung
+      console.log(orangtua2.firstElementChild.innerText); // output: kakak
+
+      // 3. mengambil anak terakhir langsung
+      console.log(orangtua2.lastElementChild.innerText); // output: adik
+
+      // - mencari sibling
+      const adik = kamu.nextElementSibling;
+      console.log(adik.innerText); // output: adik
+
+      const kakak = kamu.previousElementSibling;
+      console.log(kakak.innerText); // output: kakak
+
+      // -------------------------------------------------------------------
+
+      // <!-- MATERI 6 : DOM EVENTS -->
+      // penerapan jenis event populer:
+
+      // 1. Mouse Events
+      // Event Click
+      document
+        .getElementById("tombol-klik")
+        .addEventListener("click", function () {
+          alert("Tombol berhasil di klik!");
+        });
+
+      // Event Mouse Hover
+      const box = document.getElementById("box");
+      box.addEventListener("mouseover", function () {
+        box.style.backgroundColor = "lightgreen";
+      });
+      box.addEventListener("mouseleave", function () {
+        box.style.backgroundColor = "lightblue";
+      });
+
+      // 2. Keyboard Events
+      const input = document.getElementById("input-nama");
+      const pesan = document.getElementById("pesan");
+
+      // Menggunakan keyup untuk mendeteksi saat user selesai mengetik satu huruf
+      input.addEventListener("keyup", function (e) {
+        pesan.innerText = "Kamu sedang mengetik: " + input.value;
+      });
+
+      // 3. Form Events
+      const email = document.getElementById("input-email");
+
+      email.addEventListener("focus", function () {
+        email.style.border = "2px solid blue";
+      });
+
+      email.addEventListener("blur", function () {
+        email.style.border = "1px solid gray";
+      });
+
+      // - Membedah Event Object
+      // 1. e.target
+      document.addEventListener("click", function (e) {
+        // Setiap kali kamu mengklik bagian mana pun di web,
+        // console akan memberi tahu tag apa yang kamu klik.
+        // console.log("Kamu baru saja mengklik tag: ", e.target.tagName);
+      });
+
+      // 2. e.preventDefault()
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Mencegah halaman agar TIDAK REFRESH!
+
+          // Sekarang kita bisa lakukan validasi atau kirim data ke server dengan tenang
+          alert(
+            "Data form berhasil diamankan oleh JavaScript tanpa refresh halaman!",
+          );
+        });
+    </script>
+  </body>
+</html>

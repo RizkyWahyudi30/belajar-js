@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soal 1.1 — Ganti Teks</title>
+  </head>
+  <body>
+    <!-- 
+    Buat sebuah <h1 id="judul">Judul Lama</h1> dan sebuah <button 
+    id="btnGanti">Ganti Judul</button>. Saat tombol diklik, ganti 
+    isi <h1> jadi "Judul Sudah Diganti!" pakai textContent.
+    -->
+
+    <h1 id="judul">Judul Lama</h1>
+    <button id="btnGanti">Ganti Judul</button>.
+
+    <script>
+      const judul = document.getElementById("judul");
+      document
+        .getElementById("btnGanti")
+        .addEventListener("click", function () {
+          judul.textContent = "Judul Sudah Diganti";
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+Project Fase 1 — Expense Tracker (Console)
+
+Data awal yang kamu pakai
+const transactions = [
+  { id: 1, description: "Makan siang", category: "makanan", amount: 45000 },
+  { id: 2, description: "Grab ke kantor", category: "transport", amount: 32000 },
+  { id: 3, description: "Kopi Starbucks", category: "makanan", amount: 65000 },
+  { id: 4, description: "Token listrik", category: "tagihan", amount: 150000 },
+  { id: 5, description: "Indomaret", category: "makanan", amount: 28000 },
+  { id: 6, description: "Bensin", category: "transport", amount: 80000 },
+  { id: 7, description: "Netflix", category: "tagihan", amount: 54000 },
+  { id: 8, description: "Makan malam", category: "makanan", amount: 72000 },
+];
+
+Yang harus kamu buat
+Fitur 1 — Hitung total semua pengeluaran
+Tampilkan total seluruh transaksi. Contoh output:
+Total pengeluaran: Rp 526.000
+
+Fitur 2 — Filter berdasarkan kategori
+Buat function getByCategory(transactions, category) yang return array transaksi sesuai kategori yang 
+diminta. Contoh output saat dipanggil dengan "makanan":
+Transaksi kategori "makanan":
+- Makan siang: Rp 45.000
+- Kopi Starbucks: Rp 65.000
+- Indomaret: Rp 28.000
+- Makan malam: Rp 72.000
+
+Fitur 3 — Cari transaksi terbesar
+Cari transaksi dengan amount paling besar pakai reduce. Contoh output:
+Pengeluaran terbesar: Token listrik (Rp 150.000)
+
+Fitur 4 — Ringkasan per kategori
+Hitung total pengeluaran per kategori. Contoh output:
+Ringkasan per kategori:
+- makanan: Rp 210.000
+- transport: Rp 112.000
+- tagihan: Rp 204.000
+
+-------------------------------------------------------------------------------------------

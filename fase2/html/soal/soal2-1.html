@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soal 2.1 — Validasi Form Sederhana</title>
+  </head>
+  <body>
+    <!-- 
+    
+    Soal 2.1 — Validasi Form Sederhana
+    Buat form dengan <input id="umur"> dan <button id="btnCek">Cek</button> serta <p id="hasil"></p>. Saat tombol diklik:
+
+    Ambil value dari input, ubah ke number.
+    Pakai if/else untuk cek: kalau umur < 0 tampilkan "Umur tidak valid", kalau < 17 tampilkan "Belum boleh daftar", kalau >= 17 tampilkan "Boleh daftar".
+    Tampilkan hasilnya ke <p id="hasil"> pakai textContent.
+    Bonus: pakai e.preventDefault() kalau kamu bungkus dengan <form>.
+    
+    -->
+
+    <form action="">
+      <input type="text" id="umur" placeholder="Isi umur mu" />
+      <button id="btnCek">Cek</button>
+      <p id="hasil"></p>
+    </form>
+
+    <script type="text/javascript">
+      const dataUmur = document.getElementById("umur");
+      const btn = document.getElementById("btnCek");
+      const hasil = document.getElementById("hasil");
+
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const umur = parseInt(dataUmur.value);
+
+        if (isNaN(umur)) {
+          alert("Masukkan angka yang valid");
+          return;
+        }
+
+        if (umur < 0) {
+          hasil.textContent = "Umur tidak valid!";
+        } else if (umur < 17) {
+          hasil.textContent = "Belum boleh daftar";
+        } else {
+          hasil.textContent = "Boleh daftar";
+        }
+      });
+    </script>
+  </body>
+</html>

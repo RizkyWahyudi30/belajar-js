@@ -1,0 +1,50 @@
+<!-- Soal 4.1 — Render List dari Array of Object
+Diberikan data: 
+
+const produk = [
+  { id: 1, nama: "Kopi", harga: 15000, kategori: "minuman" },
+  { id: 2, nama: "Roti", harga: 10000, kategori: "makanan" },
+  { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
+];
+
+Render semua produk ke dalam <ul> menggunakan .map() dan 
+    .forEach() (boleh pilih salah satu, tapi paham beda 
+    keduanya). Setiap <li> tampilkan nama dan harga.
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <ul id="tampilan"></ul>
+
+    <script type="text/javascript">
+      const tampilan = document.getElementById("tampilan");
+
+      const produk = [
+        { id: 1, nama: "Kopi", harga: 15000, kategori: "minuman" },
+        { id: 2, nama: "Roti", harga: 10000, kategori: "makanan" },
+        { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
+      ];
+
+      const convert_map = produk.map((prod) => {
+        return {
+          nama: prod.nama,
+          harga: prod.harga,
+        };
+      });
+
+      convert_map.forEach((prod) => {
+        const li = document.createElement("li");
+
+        li.textContent = `${prod.nama}: ${prod.harga}`;
+
+        tampilan.append(li);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!-- 
+LANJUT DARI SOAL 4-1
+
+Soal 4.2 — Filter + Render Ulang
+Tambahkan tombol "Tampilkan Minuman Saja" dan "Tampilkan 
+Semua". Saat "Tampilkan Minuman Saja" diklik, gunakan 
+.filter() untuk ambil produk dengan kategori === "minuman", 
+lalu render ulang list (kosongkan dulu <ul> sebelum render 
+ulang).
+
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <ul id="show"></ul>
+    <div>
+      <button id="semua">Tampilkan semua</button>
+      <button id="minuman">Tampilkan Minuman Saja</button>
+      <button id="makanan">Tampilkan Makanan Saja</button>
+    </div>
+
+    <script type="text/javascript">
+      const show = document.getElementById("show");
+      const minuman = document.getElementById("minuman");
+      const makanan = document.getElementById("makanan");
+      const semua = document.getElementById("semua");
+
+      const produk = [
+        { id: 1, nama: "Kopi", harga: 15000, kategori: "minuman" },
+        { id: 2, nama: "Roti", harga: 10000, kategori: "makanan" },
+        { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
+      ];
+
+      const convert_prod = produk.map((prod) => {
+        return {
+          nama: prod.nama,
+          harga: prod.harga,
+          kategori: prod.kategori,
+        };
+      });
+
+      //   function buat menampilkan di HTML
+      function showInHTML(arrProd) {
+        show.textContent = "";
+        arrProd.forEach((prod) => {
+          const li = document.createElement("li");
+          li.textContent = `${prod.nama}: ${prod.harga}`;
+          show.append(li);
+        });
+      }
+
+      //   buat awal ketika buka halaman
+      showInHTML(convert_prod);
+
+      minuman.addEventListener("click", () => {
+        const filterProd = convert_prod.filter(
+          (prod) => prod.kategori === "minuman",
+        );
+
+        showInHTML(filterProd);
+      });
+
+      makanan.addEventListener("click", () => {
+        const filterProd = convert_prod.filter(
+          (prod) => prod.kategori === "makanan",
+        );
+
+        showInHTML(filterProd);
+      });
+
+      semua.addEventListener("click", () => {
+        showInHTML(convert_prod);
+      });
+    </script>
+  </body>
+</html>

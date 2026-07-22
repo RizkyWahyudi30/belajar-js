@@ -1,0 +1,24 @@
+SOAL 9 -- (this) Keyword
+
+Diberikan object berikut:
+const car = {
+  brand: "Toyota",
+  speed: 0,
+  accelerate: function (amount) {
+    this.speed += amount;
+    console.log(`${this.brand} sekarang melaju ${this.speed} km/jam`);
+  }
+};
+Pertanyaan (jawab, bukan coding):
+- Apa yang terjadi kalau kamu ubah accelerate jadi arrow function accelerate: (amount) => { this.speed += amount; ... }? Jelaskan kenapa.
+- Kalau ada const drive = car.accelerate; drive(5); — apakah ini akan jalan seperti car.accelerate(5)? Kenapa?
+
+Jawaban: 
+1. Akan terjadi error atau undefined, karena this di arrow function tidak mengacu ke object speed, melainkan ke object global
+2. Karena hanya pemanggilan nya yang berbeda, car.accelerate di definisikan dengan variable drive;
+
+Jawaban yang sudah dikoreksi :
+1. Yang sebenarnya terjadi: arrow function mengambil this dari scope tempat ia ditulis (lexical scope), 
+bukan dari object yang "memilikinya". Karena accelerate ditulis langsung di dalam object literal 
+(bukan di dalam function lain), maka this di sana merujuk ke scope di luar object — biasanya 
+module.exports (Node) atau undefined (strict mode/ES module), bukan car

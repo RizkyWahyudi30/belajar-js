@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soal 1.3 — Buat Elemen Dinamis</title>
+  </head>
+  <body>
+    <!-- 
+    Buat <ul id="daftar"></ul> kosong dan <input 
+    id="inputItem"> + <button id="btnTambah">Tambah</button>. 
+    Saat tombol diklik, ambil value dari input, buat <li> baru berisi teks 
+    itu, lalu appendChild ke <ul>. Input dikosongkan lagi setelah ditambah.
+    -->
+
+    <ul id="daftar"></ul>
+
+    <input id="inputItem" />
+    <button id="btnTambah">Tambah</button>
+
+    <script>
+      const ul = document.getElementById("daftar");
+      const btn = document.getElementById("btnTambah");
+      const input = document.getElementById("inputItem");
+
+      btn.addEventListener("click", function () {
+        const li = document.createElement("li");
+        li.textContent = input.value;
+
+        // mencegah bila input sengaja diisi kosong
+        if (input.value.trim() === "") {
+          alert("Tidak boleh kosong");
+          return;
+        }
+
+        ul.appendChild(li);
+
+        input.value = "";
+      });
+    </script>
+  </body>
+</html>

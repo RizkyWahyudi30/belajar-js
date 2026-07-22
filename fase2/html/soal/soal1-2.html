@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soal 1.2 — Toggle Class</title>
+    <style>
+      .active {
+        background: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 
+    Buat sebuah <div class="box">Kotak</div> dengan CSS class 
+    .active { background: yellow; }. Buat tombol yang men-toggle 
+    class active tiap kali diklik (pakai classList.toggle).
+    -->
+
+    <div class="box">Kotak</div>
+    <button id="toggle-button">Ganti warna</button>
+
+    <script>
+      const box = document.querySelector(".box");
+      document
+        .getElementById("toggle-button")
+        .addEventListener("click", function () {
+          box.classList.toggle("active");
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+    Soal 2.2 — Kalkulator Diskon (pakai function terpisah)
+    
+    Buat input harga, input persen diskon, tombol hitung, 
+    dan area hasil. Buat function terpisah 
+    hitungDiskon(harga, persen) (function declaration 
+    atau arrow, bebas) yang return harga setelah diskon. 
+    Panggil function itu di dalam event listener tombol, 
+    lalu tampilkan hasilnya ke DOM.
+    -->
+    <!-- 
+    📌 Tujuan soal ini: memisahkan logic murni 
+    (function kalkulasi) dari DOM handling (event + render).
+    Ini pola yang akan terus kamu pakai.
+    -->
+
+    <form action="">
+      <input type="text" id="inputHarga" placeholder="Input harga" />
+      <input type="text" id="inputDiskon" placeholder="Input diskon" />
+      <button id="hitung">Hitung</button>
+    </form>
+    <p id="">Total: <span id="hasil"></span></p>
+
+    <script type="text/javascript">
+      const hasil = document.getElementById("hasil");
+      const btn = document.getElementById("hitung");
+      const inputHarga = document.getElementById("inputHarga");
+      const inputDiskon = document.getElementById("inputDiskon");
+
+      function hargaDiskon(harga, persen) {
+        const diskon = (harga * persen) / 100;
+        return harga - diskon;
+      }
+
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const harga = Number(inputHarga.value);
+        const diskon = Number(inputDiskon.value);
+
+        const totalHarga = hargaDiskon(harga, diskon);
+        hasil.textContent = totalHarga;
+      });
+    </script>
+  </body>
+</html>

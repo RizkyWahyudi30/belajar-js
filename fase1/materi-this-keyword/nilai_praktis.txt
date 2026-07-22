@@ -1,0 +1,11 @@
+Ringkasan praktis (cheat sheet)
+--------------------------------------------------------
+Cara Dipanggil                 |  Nilai (this)
+- fn() sendirian                  undefined (strict) / global object
+- obj.method()                    obj
+- fn.call(obj) /                  obj(dipaksa) 
+  fn.apply(obj)
+- const bound = fn.bind(obj)      obj(terkunci permanen)
+- arrow function                  Ambil this dari scope luar terdekat (lexical)
+- Di dalam class method           Instance yang dibuat dari class itu (nanti kita bahas detail)
+

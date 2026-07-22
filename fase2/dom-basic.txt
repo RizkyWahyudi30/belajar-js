@@ -1,0 +1,52 @@
+DOM BASIC:
+- DOM Selection
+    - document.getElementById()
+    - document.getElementsByClassName()
+    - document.getElementByTagName()
+    Yang sering dipakai dan modern:
+        - document.querySelector()
+        - document.querySelectorAll()   
+
+- DOM Manipulation
+    mengubah content: 
+        - innerHTML = parse sebagai HTML, hati-hati XSS kalau dari input user! 
+        - innerText = hanya text, memperhatikan CSS (misal display:none jadi ga kebaca)
+        - textContext = hanya text, LEBIH CEPAT, ambil semua text termasuk yang di-hide CSS
+    mengubah attribute:
+        - element.setAttribute('nama_attribute', 'nilai')
+        - element.getAttribute()
+        - element.removeAttribute()
+    mengubah style:
+        - element.style.propertyName
+    
+- ClassList Manipulation
+    - element.classList.add()
+    - element.classList.remove()
+    - element.classList.toggle()
+    - element.classList.contains()
+
+- DOM Nodes
+    - document.createElement() = Membuat tag HTML baru di memori
+    - document.createTextNode() = Membuat isi teks mentah (sebenarnya mirip seperti 
+    mengisi .innerText, tapi ini versi Node murninya).
+    Menyisipkan elemen ke Layar:
+        - parent.appendChild()
+        - parent.insertBefore()
+        - Modern: element.append() [Menaruh di paling belakang dalam container] dan element.prepand() [Menaruh di paling depan dalam container]
+    Menghapus elemen:
+        - parent.removeChild() [cara lama]
+        - element.remove() [cara baru]
+
+- DOM Traversal 
+    - Mencari Parent: parentElement / parentNode
+    - Mencari Child: children / firstElementChild / lastElementChild
+    - Mencari Sibling: nextElementSibling / previousElementSibling 
+
+- DOM Events
+    - element.addEventListener('name_event', function)
+    Jenis event populer:
+        - Mouse Event: click, dbclick, mouseover, mouseleave
+        - Keyboard Events: keydown, keyup, keypress
+        - Form Events: submit, change, focus, blur 
+    Event Object (e atau event): mengambil data dari aksi user, misalnya e.target (elemen apa yang diklik) 
+    atau e.preventDefault() (menghentikan aksi bawaan browser, seperti halaman refresh saat form di-submit).

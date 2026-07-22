@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+    Buat tombol "+1", "+5", dan <span id="counter">0</span>. 
+    Buat SATU function tambahCounter(nilai = 1) yang 
+    menerima parameter dan menambahkan ke angka yang tampil 
+    di <span>. Tombol "+1" panggil tanpa argumen 
+    (pakai default), tombol "+5" panggil dengan argumen 5.
+    -->
+
+    <span id="counter">0</span>
+    <div>
+      <button id="tambah">+1</button>
+      <button id="pluslima">+5</button>
+    </div>
+    <div>
+      <button id="kurang">-1</button>
+      <button id="minlima">-5</button>
+    </div>
+
+    <script type="text/javascript">
+      const review = document.getElementById("counter");
+      const btntambahd = document.getElementById("tambah");
+      const btnpluslima = document.getElementById("pluslima");
+
+      const btnkurangd = document.getElementById("kurang");
+      const btnminlima = document.getElementById("minlima");
+
+      let angka = 0;
+
+      // versi hanya tambah, kalau ada kurangnya bisa liat
+      // function dibawah nya
+
+      //   function counter(nilai = 1) {
+      //     angka += nilai;
+      //     review.textContent = angka;
+      //   }
+
+      function counter(action, nilai = 1) {
+        if (action === "tambah") {
+          angka += nilai;
+        } else {
+          angka -= nilai;
+        }
+        review.textContent = angka;
+      }
+
+      btntambahd.addEventListener("click", function () {
+        counter("tambah");
+      });
+
+      btnpluslima.addEventListener("click", function () {
+        counter("tambah", 5);
+      });
+
+      btnkurangd.addEventListener("click", function () {
+        counter("kurang");
+      });
+
+      btnminlima.addEventListener("click", function () {
+        counter("kurang", 5);
+      });
+    </script>
+  </body>
+</html>
