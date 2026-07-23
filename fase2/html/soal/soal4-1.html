@@ -31,14 +31,7 @@ Render semua produk ke dalam <ul> menggunakan .map() dan
         { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
       ];
 
-      const convert_map = produk.map((prod) => {
-        return {
-          nama: prod.nama,
-          harga: prod.harga,
-        };
-      });
-
-      convert_map.forEach((prod) => {
+      produk.forEach((prod) => {
         const li = document.createElement("li");
 
         li.textContent = `${prod.nama}: ${prod.harga}`;

@@ -25,6 +25,10 @@
       <tbody id="show-list"></tbody>
     </table>
 
+    <p>List keranjang:</p>
+    <ul id="list-keranjang"></ul>
+    <p>Total: <span id="total-harga">0</span></p>
+
     <script type="text/javascript">
       const semua = document.getElementById("btn-semua");
       const btn_makanan = document.getElementById("btn-makanan");
@@ -37,13 +41,55 @@
         { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
       ];
 
-      const convert_prod = produk.map((prod) => {
-        return {
-          nama: prod.nama,
-          harga: prod.harga,
-          kategori: prod.kategori,
-        };
-      });
+      const keranjang = [];
+
+      function tambahKeranjang(id) {
+        // ambil produk berdasarkan id
+        const produk_pilihan = produk.find((prod) => prod.id === id);
+
+        // memasukkan produk ke array keranjang
+        if (produk_pilihan) {
+          const produk_keranjang = keranjang.find((item) => item.id === id);
+
+          if (produk_keranjang) {
+            // Jika data sudah ada, hanya masukkan harga
+            produk_keranjang.jumlah += 1;
+          } else {
+            // jika belum ada, masukkan objek dan properti jumlah
+            keranjang.push({
+              ...produk_pilihan,
+              jumlah: 1,
+            });
+          }
+
+          // tampilkan keranjang di HTML
+          updateKeranjang();
+        }
+      }
+
+      function updateKeranjang() {
+        const list_keranjang = document.getElementById("list-keranjang");
+        const total_harga_produk = document.getElementById("total-harga");
+
+        list_keranjang.innerHTML = "";
+
+        keranjang.forEach((item) => {
+          const li = document.createElement("li");
+
+          // subtotal barang (harga * jumlah)
+          const subtotal_harga = item.harga * item.jumlah;
+
+          li.textContent = `${item.nama} - Rp. ${item.harga} [${item.jumlah}]`;
+          list_keranjang.append(li);
+        });
+
+        const total = totalHarga(keranjang);
+        total_harga_produk.textContent = total;
+      }
+
+      function totalHarga(produk) {
+        return produk.reduce((sum, prd) => sum + prd.harga * prd.jumlah, 0);
+      }
 
       function showInHTML(arrProd) {
         show.textContent = "";
@@ -57,7 +103,7 @@
             <td>Rp. ${prod.harga}</td>
             <td>${prod.kategori}</td>
             <td>
-              <button>Tambah ke Keranjang</button>  
+              <button onclick="tambahKeranjang(${prod.id})">Tambah ke Keranjang</button>
             </td>
           `;
 
@@ -65,24 +111,24 @@
         });
       }
 
-      showInHTML(convert_prod);
+      showInHTML(produk);
 
       semua.addEventListener("click", () => {
-        showInHTML(convert_prod);
+        showInHTML(produk);
       });
 
       btn_makanan.addEventListener("click", () => {
-        const filter_prod = convert_prod.filter((prod) => {
-          prod.kategori === "makanan";
-        });
+        const filter_prod = produk.filter(
+          (prod) => prod.kategori === "makanan",
+        );
 
         showInHTML(filter_prod);
       });
 
       btn_minuman.addEventListener("click", () => {
-        const filter_prod = convert_prod.filter((prod) => {
-          prod.kategori === "minuman";
-        });
+        const filter_prod = produk.filter(
+          (prod) => prod.kategori === "minuman",
+        );
 
         showInHTML(filter_prod);
       });

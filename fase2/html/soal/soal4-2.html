@@ -20,9 +20,9 @@ ulang).
   <body>
     <ul id="show"></ul>
     <div>
-      <button id="semua">Tampilkan semua</button>
-      <button id="minuman">Tampilkan Minuman Saja</button>
-      <button id="makanan">Tampilkan Makanan Saja</button>
+      <button data-kategori="semua">Tampilkan semua</button>
+      <button data-kategori="minuman">Tampilkan Minuman Saja</button>
+      <button data-kategori="makanan">Tampilkan Makanan Saja</button>
     </div>
 
     <script type="text/javascript">
@@ -37,14 +37,6 @@ ulang).
         { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
       ];
 
-      const convert_prod = produk.map((prod) => {
-        return {
-          nama: prod.nama,
-          harga: prod.harga,
-          kategori: prod.kategori,
-        };
-      });
-
       //   function buat menampilkan di HTML
       function showInHTML(arrProd) {
         show.textContent = "";
@@ -56,26 +48,26 @@ ulang).
       }
 
       //   buat awal ketika buka halaman
-      showInHTML(convert_prod);
+      showInHTML(produk);
 
-      minuman.addEventListener("click", () => {
-        const filterProd = convert_prod.filter(
-          (prod) => prod.kategori === "minuman",
-        );
+      function filterKategori(kategori) {
+        .filter((prod) => {
 
-        showInHTML(filterProd);
-      });
+        })
+      }
 
-      makanan.addEventListener("click", () => {
-        const filterProd = convert_prod.filter(
-          (prod) => prod.kategori === "makanan",
-        );
+      const semuaTombol = document.querySelectorAll("[data-kategori]");
 
-        showInHTML(filterProd);
-      });
+      semuaTombol.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const kategori = e.target.dataset.kategori;
 
-      semua.addEventListener("click", () => {
-        showInHTML(convert_prod);
+          console.log("Kategori yang di klik:", kategori);
+
+          kategori.filter((prod) => {
+
+          })
+        });
       });
     </script>
   </body>
