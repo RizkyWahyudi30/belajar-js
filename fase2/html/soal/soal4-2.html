@@ -27,9 +27,6 @@ ulang).
 
     <script type="text/javascript">
       const show = document.getElementById("show");
-      const minuman = document.getElementById("minuman");
-      const makanan = document.getElementById("makanan");
-      const semua = document.getElementById("semua");
 
       const produk = [
         { id: 1, nama: "Kopi", harga: 15000, kategori: "minuman" },
@@ -50,10 +47,13 @@ ulang).
       //   buat awal ketika buka halaman
       showInHTML(produk);
 
-      function filterKategori(kategori) {
-        .filter((prod) => {
+      function filterKategori(arrProduk, kategori) {
+        // jika button "semua" yg di klik, maka skip filter
+        if (kategori === "semua") {
+          return arrProduk;
+        }
 
-        })
+        return arrProduk.filter((prod) => prod.kategori === kategori);
       }
 
       const semuaTombol = document.querySelectorAll("[data-kategori]");
@@ -64,9 +64,8 @@ ulang).
 
           console.log("Kategori yang di klik:", kategori);
 
-          kategori.filter((prod) => {
-
-          })
+          const filterProduk = filterKategori(produk, kategori);
+          showInHTML(filterProduk);
         });
       });
     </script>

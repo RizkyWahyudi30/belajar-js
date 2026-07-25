@@ -1,3 +1,16 @@
+<!-- 
+Soal 4.3 — Keranjang Belanja (Gabungan Total)
+
+Tiap <li> produk punya tombol "Tambah ke Keranjang".
+Klik tombol itu akan memasukkan produk ke array keranjang 
+(mulai dari array kosong, pakai spread operator untuk
+menambah item baru, bukan push — latihan spread).
+
+Tampilkan total belanja di <p id="total"> menggunakan 
+.reduce(), ter-update otomatis tiap kali item 
+ditambahkan.
+-->
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,34 +19,35 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>List Barang</h1>
-
-    <button id="btn-semua">Semua</button>
-    <button id="btn-makanan">Makanan</button>
-    <button id="btn-minuman">Minuman</button>
+    <div>
+      <button data-kategori="semua">Tampilkan Semua</button>
+      <button data-kategori="makanan">Tampilkan Makanan</button>
+      <button data-kategori="minuman">Tampilkan Minuman</button>
+    </div>
 
     <table id="table" border="1">
       <thead>
         <tr>
-          <th id="no">No</th>
-          <th id="nama">Nama</th>
-          <th id="harga">Harga</th>
-          <th id="kategori">Kategori</th>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Harga</th>
+          <th>Kategori</th>
           <th>Aksi</th>
         </tr>
       </thead>
       <tbody id="show-list"></tbody>
     </table>
 
-    <p>List keranjang:</p>
-    <ul id="list-keranjang"></ul>
+    <p>List barang</p>
+    <ul id="list-barang"></ul>
+
     <p>Total: <span id="total-harga">0</span></p>
 
-    <script type="text/javascript">
-      const semua = document.getElementById("btn-semua");
-      const btn_makanan = document.getElementById("btn-makanan");
-      const btn_minuman = document.getElementById("btn-minuman");
+    <script>
       const show = document.getElementById("show-list");
+      const all_tombol = document.querySelectorAll("[data-kategori]");
+
+      let keranjang = [];
 
       const produk = [
         { id: 1, nama: "Kopi", harga: 15000, kategori: "minuman" },
@@ -41,57 +55,7 @@
         { id: 3, nama: "Teh", harga: 8000, kategori: "minuman" },
       ];
 
-      const keranjang = [];
-
-      function tambahKeranjang(id) {
-        // ambil produk berdasarkan id
-        const produk_pilihan = produk.find((prod) => prod.id === id);
-
-        // memasukkan produk ke array keranjang
-        if (produk_pilihan) {
-          const produk_keranjang = keranjang.find((item) => item.id === id);
-
-          if (produk_keranjang) {
-            // Jika data sudah ada, hanya masukkan harga
-            produk_keranjang.jumlah += 1;
-          } else {
-            // jika belum ada, masukkan objek dan properti jumlah
-            keranjang.push({
-              ...produk_pilihan,
-              jumlah: 1,
-            });
-          }
-
-          // tampilkan keranjang di HTML
-          updateKeranjang();
-        }
-      }
-
-      function updateKeranjang() {
-        const list_keranjang = document.getElementById("list-keranjang");
-        const total_harga_produk = document.getElementById("total-harga");
-
-        list_keranjang.innerHTML = "";
-
-        keranjang.forEach((item) => {
-          const li = document.createElement("li");
-
-          // subtotal barang (harga * jumlah)
-          const subtotal_harga = item.harga * item.jumlah;
-
-          li.textContent = `${item.nama} - Rp. ${item.harga} [${item.jumlah}]`;
-          list_keranjang.append(li);
-        });
-
-        const total = totalHarga(keranjang);
-        total_harga_produk.textContent = total;
-      }
-
-      function totalHarga(produk) {
-        return produk.reduce((sum, prd) => sum + prd.harga * prd.jumlah, 0);
-      }
-
-      function showInHTML(arrProd) {
+      function tampilKatalog(arrProd) {
         show.textContent = "";
 
         arrProd.forEach((prod, index) => {
@@ -100,37 +64,88 @@
           tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${prod.nama}</td>
-            <td>Rp. ${prod.harga}</td>
+            <td>${prod.harga}</td>
             <td>${prod.kategori}</td>
             <td>
-              <button onclick="tambahKeranjang(${prod.id})">Tambah ke Keranjang</button>
+              <button data-id="${prod.id}">Tambahkan ke Keranjang</button>
             </td>
           `;
 
           show.append(tr);
         });
       }
+      tampilKatalog(produk);
 
-      showInHTML(produk);
+      function tambahKeranjang(id) {
+        // ambil produk berdasarkan id
+        const produkPilihan = produk.find((prod) => prod.id === id);
 
-      semua.addEventListener("click", () => {
-        showInHTML(produk);
+        // memasukkan produk ke keranjang
+        if (!produkPilihan) return;
+
+        // cari apakah di keranjang sudah ada
+        const produkKeranjang = keranjang.find((prod) => prod.id === id);
+
+        if (produkKeranjang) {
+          // kalau sudah ada, buat properti baru jumlah yang value nya
+          // ditambah 1
+          produkKeranjang.jumlah += 1;
+        } else {
+          keranjang = [...keranjang, { ...produkPilihan, jumlah: 1 }];
+        }
+
+        tampilKeranjang();
+      }
+
+      function tampilKeranjang() {
+        const listBarang = document.getElementById("list-barang");
+        const totalHargaProduk = document.getElementById("total-harga");
+
+        listBarang.textContent = "";
+
+        keranjang.forEach((item) => {
+          const li = document.createElement("li");
+          const harga_per_barang = item.harga * item.jumlah;
+
+          li.textContent = `${item.nama} - Rp. ${item.harga} [${item.jumlah}] = Rp. ${harga_per_barang}`;
+          listBarang.append(li);
+        });
+
+        const total = totalHarga(keranjang);
+        totalHargaProduk.textContent = total;
+      }
+
+      function totalHarga(arrProd) {
+        return arrProd.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
+      }
+
+      function filterKategori(arrProd, kategori) {
+        // jika btn 'semua', maka di skip
+        if (kategori === "semua") {
+          return arrProd;
+        }
+
+        return arrProd.filter((prod) => prod.kategori === kategori);
+      }
+
+      all_tombol.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const kategori = e.target.dataset.kategori;
+
+          console.log("Kategori yang di click:", kategori);
+
+          const filterProduk = filterKategori(produk, kategori);
+          tampilKatalog(filterProduk);
+        });
       });
 
-      btn_makanan.addEventListener("click", () => {
-        const filter_prod = produk.filter(
-          (prod) => prod.kategori === "makanan",
-        );
+      // button untuk tambah keranjang
+      show.addEventListener("click", (e) => {
+        if (e.target.dataset.id) {
+          const idProduk = Number(e.target.dataset.id);
 
-        showInHTML(filter_prod);
-      });
-
-      btn_minuman.addEventListener("click", () => {
-        const filter_prod = produk.filter(
-          (prod) => prod.kategori === "minuman",
-        );
-
-        showInHTML(filter_prod);
+          tambahKeranjang(idProduk);
+        }
       });
     </script>
   </body>
