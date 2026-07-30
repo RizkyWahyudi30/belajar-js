@@ -11,6 +11,8 @@ const undone = document.getElementById("total-undone");
 
 let dataInput = [];
 
+let editId = null;
+
 function tambahNoteBaru(judul, isi, deskripsi, tanggal) {
   return {
     id: Date.now(),
@@ -52,16 +54,15 @@ function tampilkanData(arrDataNote) {
 function editNote(id) {
   const noteEdit = dataInput.find((note) => note.id === id);
 
-  if (noteEdit) {
-    // lempar kembali isi data nya ke input agar bisa diatur ulang
-    dataJudul.value = noteEdit.judul;
-    dataIsi.value = noteEdit.isi;
-    dataDeskripsi.value = noteEdit.deskripsi;
-    dataTanggal.value = noteEdit.tanggal;
+  if (!noteEdit) return;
 
-    // hapus data lama dari array, agar tidak double
-    hapusNote(id);
-  }
+  dataJudul.value = noteEdit.judul;
+  dataIsi.value = noteEdit.isi;
+  dataDeskripsi.value = noteEdit.deskripsi;
+  dataTanggal.value = noteEdit.tanggal;
+
+  // sedang dalam mode edit, note tidak dihapus dulu
+  editId = id;
 }
 
 function hapusNote(id) {
@@ -103,16 +104,30 @@ btnTambahNote.addEventListener("click", (e) => {
     return;
   }
 
-  const noteBaru = tambahNoteBaru(
-    dataJudul.value,
-    dataIsi.value,
-    dataDeskripsi.value,
-    dataTanggal.value,
-  );
+  // validasi mode edit maupun mode tambah note baru
+  if (editId) {
+    // MODE EDIT: update note yang sudah ada
+    const note = dataInput.find((n) => n.id === editId);
 
-  dataInput.push(noteBaru);
+    note.judul = dataJudul.value;
+    note.isi = dataIsi.value;
+    note.deskripsi = dataDeskripsi.value;
+    note.tanggal = dataTanggal.value;
+
+    editId = null; // reset
+  } else {
+    // MODE TAMBAH: tambah note baru
+    const noteBaru = tambahNoteBaru(
+      dataJudul.value,
+      dataIsi.value,
+      dataDeskripsi.value,
+      dataTanggal.value,
+    );
+
+    dataInput.push(noteBaru);
+  }
+
   tampilkanData(dataInput);
-
   console.log(dataInput);
 
   dataJudul.value = "";
