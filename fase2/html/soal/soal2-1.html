@@ -25,23 +25,22 @@
     </form>
 
     <script type="text/javascript">
-      const dataUmur = document.getElementById("umur");
       const btn = document.getElementById("btnCek");
       const hasil = document.getElementById("hasil");
 
       btn.addEventListener("click", function (e) {
         e.preventDefault();
 
-        const umur = parseInt(dataUmur.value);
+        const dataUmur = parseInt(document.getElementById("umur").value);
 
-        if (isNaN(umur)) {
+        if (isNaN(dataUmur)) {
           alert("Masukkan angka yang valid");
           return;
         }
 
-        if (umur < 0) {
+        if (dataUmur < 0) {
           hasil.textContent = "Umur tidak valid!";
-        } else if (umur < 17) {
+        } else if (dataUmur < 17) {
           hasil.textContent = "Belum boleh daftar";
         } else {
           hasil.textContent = "Boleh daftar";

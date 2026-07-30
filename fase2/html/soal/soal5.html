@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .line-through {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="">
+      <div>
+        <label for="">Judul Note:</label>
+        <input id="input-judul" type="text" placeholder="Judul Note" />
+      </div>
+      <div>
+        <label for="">Isi Note:</label>
+        <textarea name="" id="input-isi"></textarea>
+      </div>
+      <div>
+        <label for="">Deskripsi Note:</label>
+        <input id="input-deskripsi" type="text" placeholder="Deskripsi Note" />
+      </div>
+      <div>
+        <label for="">Tanggal:</label>
+        <input id="input-tanggal" type="date" placeholder="Tanggal" />
+      </div>
+      <button id="tambah-note">Tambahkan Note</button>
+    </form>
+
+    <div style="display: flex; gap: 20px">
+      <p>Done: <span id="total-done">0</span></p>
+      <p>Un-Done: <span id="total-undone">0</span></p>
+    </div>
+
+    <ul id="list-note"></ul>
+
+    <script src="js/soal5.js"></script>
+  </body>
+</html>
