@@ -7,12 +7,14 @@ const btnKirimData = document.getElementById("kirim-data"); // btn tambah
 const hasilData = document.getElementById("hasil-data"); // html preview
 
 let allDataUser = [];
+let idEditUser = null;
 
 function tampilkanHasilData(arrDataUser) {
   hasilData.textContent = "";
 
   arrDataUser.forEach((dataUser) => {
     const li = document.createElement("li");
+    const modeEdit = dataUser.id === idEditUser;
 
     li.innerHTML = `
             <div>
@@ -25,9 +27,9 @@ function tampilkanHasilData(arrDataUser) {
             </div>
 
             <div>
-                <button>Edit Data</button>
-                <button>Hapus</button>
-                <button>Minta Kode OTP</button>
+                <button class="btn-edit" data-id="${dataUser.id}">${modeEdit ? "Batal Edit" : "Edit"}</button>
+                <button class="btn-hapus" data-id="${dataUser.id}" ${modeEdit ? "disabled" : ""}>Hapus</button>
+                <button class="btn-otp" data-id="${dataUser.id}" ${modeEdit ? "disabled" : ""}>Minta Kode OTP</button>
             </div>
         `;
 
@@ -46,12 +48,47 @@ function tambahkanDataUserBaru(name, usn, email, handphone, pass) {
   };
 }
 
+function editDataUser(id) {
+  if (idEditUser === id) {
+    resetForm();
+  } else {
+    idEditUser = id;
+    const user = allDataUser.find((user) => user.id === id);
+    if (!user) return;
+
+    btnKirimData.textContent = "Edit data user";
+    inputName.value = user.name;
+    inputUsername.value = user.username;
+    inputEmail.value = user.email;
+    inputHandphone.value = user.handphone;
+    inputPassword.value = user.password;
+  }
+
+  tampilkanHasilData(allDataUser);
+}
+
+function hapusDataUser(id) {
+  const confirmDelete = confirm("Apakah anda yakin ingin menghapus user ini?");
+
+  if (confirmDelete) {
+    allDataUser = allDataUser.filter((user) => user.id !== id);
+
+    if (idEditUser === id) {
+      resetForm();
+    }
+  }
+
+  tampilkanHasilData(allDataUser);
+}
+
 function resetForm() {
+  idEditUser = null;
   inputName.value = "";
   inputUsername.value = "";
   inputEmail.value = "";
   inputHandphone.value = "";
   inputPassword.value = "";
+  btnKirimData.textContent = "Tambahkan user";
 }
 
 btnKirimData.addEventListener("click", (e) => {
@@ -68,18 +105,43 @@ btnKirimData.addEventListener("click", (e) => {
     return;
   }
 
-  const tambahUser = tambahkanDataUserBaru(
-    inputName.value,
-    inputUsername.value,
-    inputEmail.value,
-    inputHandphone.value,
-    inputPassword.value,
-  );
+  if (idEditUser !== null) {
+    // MODE EDIT:
+    const user = allDataUser.find((user) => user.id === idEditUser);
 
-  allDataUser.push(tambahUser);
+    user.name = inputName.value;
+    user.username = inputUsername.value;
+    user.email = inputEmail.value;
+    user.handphone = inputHandphone.value;
+    user.password = inputPassword.value;
+
+    idEditUser = null;
+  } else {
+    // MODE TAMBAH:
+    const tambahUser = tambahkanDataUserBaru(
+      inputName.value,
+      inputUsername.value,
+      inputEmail.value,
+      inputHandphone.value,
+      inputPassword.value,
+    );
+
+    allDataUser.push(tambahUser);
+  }
 
   tampilkanHasilData(allDataUser);
   resetForm();
 
   console.log(allDataUser);
+});
+
+hasilData.addEventListener("click", (e) => {
+  const id = Number(e.target.dataset.id);
+
+  if (e.target.classList.contains("btn-edit")) {
+    editDataUser(id);
+  }
+  if (e.target.classList.contains("btn-hapus")) {
+    hapusDataUser(id);
+  }
 });

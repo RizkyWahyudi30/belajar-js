@@ -135,4 +135,132 @@ btnKirimData.addEventListener("click", (e) => {
 
 Setelah ini kalian bisa mencoba, aplikasi sederhana html dengan dasar JS DOM dan clean code javascript
 
-2.
+2. Selanjutnya akan kita fungsikan button Edit dan Hapus terlebih dahulu, buat kode javascript dibawah ini:
+
+Buat satu variable sebagai penampung id user yang akan dijadikan acuan untuk mode edit maupun hapus:
+
+```js
+// taruh diatas [cek file script.js aja]
+let idEditUser = null;
+```
+
+```js
+// Pada bagian function tampilkanHasilData() tambahkan baris kode dibawah dan ubah beberapa kode nya
+
+    const modeEdit = dataUser.id === idEditUser; // tambahkan kode ini
+
+    // kode di dalam nya diubah menjadi seperti ini
+    <button class="btn-edit" data-id="${dataUser.id}">${modeEdit ? "Batal Edit" : "Edit"}</button>
+    <button class="btn-hapus" data-id="${dataUser.id}" ${modeEdit ? "disabled" : ""}>Hapus</button>
+    <button class="btn-otp" data-id="${dataUser.id}" ${modeEdit ? "disabled" : ""}>Minta Kode OTP</button>
+
+```
+
+Lalu buat function baru: `editDataUser()` dan `hapusDataUser()`
+
+```js
+function editDataUser(id) {
+  if (idEditUser === id) {
+    resetForm();
+  } else {
+    idEditUser = id;
+    const user = allDataUser.find((user) => user.id === id);
+    if (!user) return;
+
+    btnKirimData.textContent = "Edit data user";
+    inputName.value = user.name;
+    inputUsername.value = user.username;
+    inputEmail.value = user.email;
+    inputHandphone.value = user.handphone;
+    inputPassword.value = user.password;
+  }
+
+  tampilkanHasilData(allDataUser);
+}
+
+function hapusDataUser(id) {
+  const confirmDelete = confirm("Apakah anda yakin ingin menghapus user ini?");
+
+  if (confirmDelete) {
+    allDataUser = allDataUser.filter((user) => user.id !== id);
+
+    if (idEditUser === id) {
+      resetForm();
+    }
+  }
+
+  tampilkanHasilData(allDataUser);
+}
+```
+
+Jika sudah, lanjut dibagian function `resetForm()` tambahkan baris dibawah ini di dalamnya:
+
+```js
+btnKirimData.textContent = "Tambahkan user";
+```
+
+Lanjut ubah di `btnKirimData` menjadi seperti dibawah ini kode nya:
+
+```js
+btnKirimData.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  if (
+    !inputName.value.trim() ||
+    !inputUsername.value.trim() ||
+    !inputEmail.value.trim() ||
+    !inputHandphone.value.trim() ||
+    !inputPassword.value.trim()
+  ) {
+    alert("Harap field diisikan semua nya");
+    return;
+  }
+
+  // ubah dibaris ini, menjadi seperti ini
+  if (idEditUser !== null) {
+    // MODE EDIT:
+    const user = allDataUser.find((user) => user.id === idEditUser);
+
+    user.name = inputName.value;
+    user.username = inputUsername.value;
+    user.email = inputEmail.value;
+    user.handphone = inputHandphone.value;
+    user.password = inputPassword.value;
+
+    idEditUser = null;
+  } else {
+    // MODE TAMBAH:
+    const tambahUser = tambahkanDataUserBaru(
+      inputName.value,
+      inputUsername.value,
+      inputEmail.value,
+      inputHandphone.value,
+      inputPassword.value,
+    );
+
+    allDataUser.push(tambahUser);
+  }
+
+  tampilkanHasilData(allDataUser);
+  resetForm();
+
+  console.log(allDataUser);
+});
+```
+
+Lalu dipaling bawah, buat kode seperti ini agar dapat memfungsikan button di dalam elemen li :
+
+```js
+hasilData.addEventListener("click", (e) => {
+  const id = Number(e.target.dataset.id);
+
+  if (e.target.classList.contains("btn-edit")) {
+    editDataUser(id);
+  }
+  if (e.target.classList.contains("btn-hapus")) {
+    hapusDataUser(id);
+  }
+});
+```
+
+Jika sudah ubah kode step 1 menjadi step 2, seharusnya kode nya sudah berjalan, dapat tambah, edit dan hapus
