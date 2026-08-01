@@ -9,9 +9,29 @@ const listNote = document.getElementById("list-note");
 const done = document.getElementById("total-done");
 const undone = document.getElementById("total-undone");
 
-let dataInput = [];
+// initialisai key agar konsisten dan menghindari typo
+const STORAGE_KEY = "notes-app-data";
+
+let dataInput = loadNotes();
 
 let editId = null;
+
+// LoadNotes: dipanggil sekali diawal, ketika halaman pertama kali dibuka
+function loadNotes() {
+  // ambil data dari local storage menggunakan key
+  const data = localStorage.getItem(STORAGE_KEY);
+
+  // mengembalikkan data dan parsing dari string ke array object
+  return data ? JSON.parse(data) : [];
+  // jika tidak ada, kembalikkan array kosong
+}
+
+// Save: dipanggil setiap kali dataInput berubah
+function saveDataNotes(data) {
+  // menyimpan ke localstorage dan parsing dari object ke string
+  // agar bisa dibaca
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
 
 function tambahNoteBaru(judul, isi, deskripsi, tanggal) {
   return {
@@ -29,6 +49,7 @@ function tampilkanData(arrDataNote) {
 
   arrDataNote.forEach((dataNote) => {
     const li = document.createElement("li");
+    const modeEdit = dataNote.id === editId;
 
     li.innerHTML = `
         <div data-class="note-content" class=" ${dataNote.isDone ? "line-through" : ""}">
@@ -39,9 +60,9 @@ function tampilkanData(arrDataNote) {
             <p></p>
         </div>
         <div data-class="note-action">
-            <button class="btn-edit" data-id="${dataNote.id}">Edit</button>
-            <button class="btn-hapus" data-id="${dataNote.id}">Hapus</button>
-            <button class="btn-done" data-id="${dataNote.id}">${dataNote.isDone ? "UnDone" : "Done"}</button>
+            <button class="btn-edit" data-id="${dataNote.id}">${modeEdit ? "Batal Edit" : "Edit"}</button>
+            <button class="btn-hapus" data-id="${dataNote.id}" ${modeEdit ? "disabled" : ""}>Hapus</button>
+            <button class="btn-done" data-id="${dataNote.id}" ${modeEdit ? "disabled" : ""}>${dataNote.isDone ? "UnDone" : "Done"}</button>
         </div>  
     `;
 
@@ -52,23 +73,42 @@ function tampilkanData(arrDataNote) {
 }
 
 function editNote(id) {
-  const noteEdit = dataInput.find((note) => note.id === id);
+  if (editId === id) {
+    resetForm(); // panggil function reset
+  } else {
+    editId = id;
+    const note = dataInput.find((n) => n.id === id);
+    if (!note) return;
 
-  if (!noteEdit) return;
+    btnTambahNote.textContent = "Upgrade Note";
+    dataJudul.value = note.judul;
+    dataIsi.value = note.isi;
+    dataDeskripsi.value = note.deskripsi;
+    dataTanggal.value = note.tanggal;
+  }
 
-  dataJudul.value = noteEdit.judul;
-  dataIsi.value = noteEdit.isi;
-  dataDeskripsi.value = noteEdit.deskripsi;
-  dataTanggal.value = noteEdit.tanggal;
-
-  // sedang dalam mode edit, note tidak dihapus dulu
-  editId = id;
+  // render ulang ui
+  tampilkanData(dataInput);
 }
 
 function hapusNote(id) {
-  // Simpan data yang ID-nya bukan ID yang dihapus
-  dataInput = dataInput.filter((note) => note.id !== id);
+  // validasi agar tidak langsung dihapus
+  const confirmDelete = confirm("Apakah kamu yakin ingin menghapus ini?");
 
+  if (confirmDelete) {
+    // Simpan data yang ID-nya bukan ID yang dihapus
+    dataInput = dataInput.filter((note) => note.id !== id);
+
+    // ini untuk membersihkan input, bertujuan untuk User Experience
+    if (id === editId) {
+      resetForm();
+    }
+  }
+
+  // save ke localStorage
+  saveDataNotes(dataInput);
+
+  // render ulang UI
   tampilkanData(dataInput);
 }
 
@@ -79,8 +119,21 @@ function doneNote(id) {
     // like as toggle, membalikkan nilai nya
     noteDone.isDone = !noteDone.isDone;
 
+    // simpan ke localStorage
+    saveDataNotes(dataInput);
+
+    // render ulang
     tampilkanData(dataInput);
   }
+}
+
+function resetForm() {
+  editId = null;
+  dataJudul.value = "";
+  dataIsi.value = "";
+  dataDeskripsi.value = "";
+  dataTanggal.value = "";
+  btnTambahNote.textContent = "Tambahkan Note";
 }
 
 function hitungNoteDone(arrNote) {
@@ -105,7 +158,7 @@ btnTambahNote.addEventListener("click", (e) => {
   }
 
   // validasi mode edit maupun mode tambah note baru
-  if (editId) {
+  if (editId !== null) {
     // MODE EDIT: update note yang sudah ada
     const note = dataInput.find((n) => n.id === editId);
 
@@ -127,13 +180,11 @@ btnTambahNote.addEventListener("click", (e) => {
     dataInput.push(noteBaru);
   }
 
+  saveDataNotes(dataInput);
   tampilkanData(dataInput);
-  console.log(dataInput);
+  resetForm();
 
-  dataJudul.value = "";
-  dataIsi.value = "";
-  dataDeskripsi.value = "";
-  dataTanggal.value = "";
+  console.log(dataInput);
 });
 
 listNote.addEventListener("click", (e) => {
@@ -151,3 +202,6 @@ listNote.addEventListener("click", (e) => {
     doneNote(id);
   }
 });
+
+// Untuk menampilkan data secara langsung
+tampilkanData(dataInput);

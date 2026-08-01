@@ -15,7 +15,7 @@ FASE 2 -> MANIPULASI HALAMAN, INTERAKSI USER
 - DOM selection & manipulation (querySelector, classList, createElement)
 - Event handling (addEventListener, event bubbling, event delegation)
 - Form handling & validation sederhana
-- LocalStorage untuk persist data
+- LocalStorage untuk persist data [Next belajar IndexedDB]
 
 Project: To-Do List dengan localStorage (data nggak hilang saat refresh). Ini project klasik tapi efektif buat melatih DOM + event.
 

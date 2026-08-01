@@ -1,0 +1,21 @@
+localStorage adalah tempat penyimpanan di browser 
+(bukan server), yang datanya tetap ada walau halaman 
+di-refresh, browser ditutup, bahkan komputer 
+di-restart. Beda dengan variable JS biasa yang hilang 
+seketika reload.
+
+------------------------------------------
+localStorage hanya dapat menyimpan string.
+Karena 'setItem()' memaksa konversi apapun jadi
+string lewat 'toString()'.
+
+Solusi nya: JSON.stringify() dan JSON.parse()
+
+------------------------------------------
+Kasus penting: 'getItem()' mengembalikkan null jika 
+key belum ada
+
+Kalau langsung JSON.parse(null), hasilnya juga tetap
+null, ini perlu di-guard supaya kode tidak beramumsi
+data selalu ada 
+
