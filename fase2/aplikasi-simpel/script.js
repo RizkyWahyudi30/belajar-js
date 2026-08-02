@@ -6,8 +6,26 @@ const inputPassword = document.getElementById("input-password"); // field
 const btnKirimData = document.getElementById("kirim-data"); // btn tambah
 const hasilData = document.getElementById("hasil-data"); // html preview
 
-let allDataUser = [];
+// inisialisasi key untuk localstorage
+const STORAGE_KEY = "data-user";
+
+let allDataUser = getDataUser();
 let idEditUser = null;
+
+// function untuk mengirimkan data ke localstorage dan parsing array object ke string
+function saveToStorage(dataUser) {
+  // kirim ke localstorage
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataUser));
+}
+
+// function untuk mengambil data dari localstorage dan parsing ke string menjadi array object
+function getDataUser() {
+  // ambil data dari key di localstorage
+  const getData = localStorage.getItem(STORAGE_KEY);
+
+  // mengembalikkan data untuk ditampilkan
+  return getData ? JSON.parse(getData) : [];
+}
 
 function tampilkanHasilData(arrDataUser) {
   hasilData.textContent = "";
@@ -78,6 +96,7 @@ function hapusDataUser(id) {
     }
   }
 
+  saveToStorage(allDataUser);
   tampilkanHasilData(allDataUser);
 }
 
@@ -129,6 +148,7 @@ btnKirimData.addEventListener("click", (e) => {
     allDataUser.push(tambahUser);
   }
 
+  saveToStorage(allDataUser);
   tampilkanHasilData(allDataUser);
   resetForm();
 
@@ -145,3 +165,6 @@ hasilData.addEventListener("click", (e) => {
     hapusDataUser(id);
   }
 });
+
+// menjalankan function tampilkan data agar dapat memunculkan data tanpa harus klik btn
+tampilkanHasilData(allDataUser);

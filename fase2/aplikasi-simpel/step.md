@@ -264,3 +264,58 @@ hasilData.addEventListener("click", (e) => {
 ```
 
 Jika sudah ubah kode step 1 menjadi step 2, seharusnya kode nya sudah berjalan, dapat tambah, edit dan hapus
+
+3. Selanjutkan kita akan menerapkan sistem LocalStorage di Aplikasi nya, kode nya seperti dibawah ini:
+
+```js
+// buat kedua function ini
+
+// function untuk mengirimkan data ke localstorage dan parsing array object ke string
+function saveToStorage(dataUser) {
+  // kirim ke localstorage
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataUser));
+}
+
+// function untuk mengambil data dari localstorage dan parsing ke string menjadi array object
+function getDataUser() {
+  // ambil data dari key di localstorage
+  const getData = localStorage.getItem(STORAGE_KEY);
+
+  // mengembalikkan data untuk ditampilkan
+  return getData ? JSON.parse(getData) : [];
+}
+```
+
+Lalu diatas inisialisasi variable key, seperti ini:
+
+```js
+// inisialisasi key untuk localstorage
+const STORAGE_KEY = "data-user";
+```
+
+Dan juga, variable `allDataUser = []` ubah menjadi `allDataUser = getDataUser();` sepeti dibawah:
+
+```js
+let allDataUser = getDataUser();
+```
+
+Jika sudah, tambahkan function `saveToStorage()` ke function `hapusDataUser()` dan `btnKirimData.`. Seperti ini:
+
+```js
+// function hapus
+saveToStorage(allDataUser);
+tampilkanHasilData(allDataUser);
+
+// btnKirimData
+
+saveToStorage(allDataUser);
+tampilkanHasilData(allDataUser);
+resetForm();
+```
+
+Lalu dibagian paling bawah, buat seperti ini:
+
+```js
+// menjalankan function tampilkan data agar dapat memunculkan data tanpa harus klik btn
+tampilkanHasilData(allDataUser);
+```
