@@ -30,9 +30,20 @@ function getDataUser() {
 function tampilkanHasilData(arrDataUser) {
   hasilData.textContent = "";
 
+  const waktuSekarang = Date.now();
+
   arrDataUser.forEach((dataUser) => {
     const li = document.createElement("li");
     const modeEdit = dataUser.id === idEditUser;
+
+    // Cek sisa waktu (dalam detik)
+    // Jika properti otpExpired ada nilai nya, dan nilai nya lebih besar dari waktu sekarang
+    // maka hitung sisa detik nya
+    const siswaWaktuTOP = dataUser.otpExpired
+      ? Math.max(0, Math.ceil((dataUser.otpExpired - waktuSekarang) / 1000))
+      : 0;
+
+    const otpAktif = siswaWaktuTOP > 0;
 
     li.innerHTML = `
             <div>
@@ -41,13 +52,15 @@ function tampilkanHasilData(arrDataUser) {
                 <p>Email: ${dataUser.email}</p>
                 <p>Handphone: ${dataUser.handphone}</p>
                 <p>Pass: ${dataUser.password}</p>
-                <p>OTP</p>
+                <p>OTP: ${otpAktif ? `${dataUser.otp}` : "-"} [sisa waktu: ${siswaWaktuTOP} detik]</p>
             </div>
 
             <div>
                 <button class="btn-edit" data-id="${dataUser.id}">${modeEdit ? "Batal Edit" : "Edit"}</button>
                 <button class="btn-hapus" data-id="${dataUser.id}" ${modeEdit ? "disabled" : ""}>Hapus</button>
-                <button class="btn-otp" data-id="${dataUser.id}" ${modeEdit ? "disabled" : ""}>Minta Kode OTP</button>
+                <button class="btn-otp" data-id="${dataUser.id}" ${modeEdit || otpAktif ? "disabled" : ""}>
+                  ${otpAktif ? `${siswaWaktuTOP}s` : "Minta kode OTP"}
+                </button>
             </div>
         `;
 
@@ -63,6 +76,8 @@ function tambahkanDataUserBaru(name, usn, email, handphone, pass) {
     email: email,
     handphone: handphone,
     password: pass,
+    otp: null, // didapat ketika user meminta kode OTP saja
+    otpExpired: null, // menyimpan timestamp kadaluarsa
   };
 }
 
@@ -108,6 +123,46 @@ function resetForm() {
   inputHandphone.value = "";
   inputPassword.value = "";
   btnKirimData.textContent = "Tambahkan user";
+}
+
+// membuat kode otp secara acak
+function generateKodeOTP() {
+  let otpBaru;
+  let otpSudahDipakai = true;
+
+  // Lakukkan perulangan terus sampai menemukan kode yang belum pernah dipakai
+  while (otpSudahDipakai) {
+    // buat otp baru yang acak
+    otpBaru = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Cek apakah angka dari otp nya masih ada yang aktif di dalam data user
+    otpSudahDipakai = allDataUser.some(
+      (user) => user.otp === otpBaru && user.otpExpired > Date.now(),
+    );
+  }
+
+  // mengembalikkan kode otp yang unique
+  return otpBaru;
+}
+
+// function untuk ambil kode otp
+function getOTP(id) {
+  const user = allDataUser.find((user) => user.id === id);
+
+  if (user) {
+    const DURASI_OTP_DETIK = 30;
+
+    user.otp = generateKodeOTP();
+
+    // Date.now() = waktu sekarang dalam milidetik
+    // DURASI * 1000 = mengubah detik ke milidetik
+    user.otpExpired = Date.now() + DURASI_OTP_DETIK * 1000;
+
+    saveToStorage(allDataUser);
+    tampilkanHasilData(allDataUser);
+
+    console.log(`User [${user.name}] berhasil mendapat OTP!`);
+  }
 }
 
 btnKirimData.addEventListener("click", (e) => {
@@ -164,7 +219,43 @@ hasilData.addEventListener("click", (e) => {
   if (e.target.classList.contains("btn-hapus")) {
     hapusDataUser(id);
   }
+  if (e.target.classList.contains("btn-otp")) {
+    getOTP(id);
+  }
 });
 
 // menjalankan function tampilkan data agar dapat memunculkan data tanpa harus klik btn
 tampilkanHasilData(allDataUser);
+
+// Buat fungsi untuk hitung mundur secara real-time
+// Menjalankan fungsi ini setiap 1 detik (1000ms) untuk memperbarui hitungan mundur di UI
+setInterval(() => {
+  const waktuSekarang = Date.now();
+  let adaPerubahanData = false;
+
+  // 1. bersihkan data user yang otp nya sudah kadaluarsa
+  allDataUser.forEach((user) => {
+    if (user.otpExpired && user.otpExpired <= waktuSekarang) {
+      user.otp = null;
+      user.otpExpired = null;
+      adaPerubahanData = true; // menandai ada bahwa data yang berubah ke null
+    }
+  });
+
+  // 2. cek apakah masih ada user yang otp-nya sedang aktif
+  const cekUserOTPAktif = allDataUser.some(
+    (user) => user.otpExpired && user.otpExpired > Date.now(),
+  );
+
+  // jika ada perubahan (OTP baru saja expired & di null-kan) simpan ke localstorage
+  if (adaPerubahanData) {
+    saveToStorage(allDataUser);
+  }
+
+  // render ulang UI:
+  // - jika ada OTP sedang hitung mundur
+  // - jika baru saja ada otp yang kadaluarsa
+  if (cekUserOTPAktif || adaPerubahanData) {
+    tampilkanHasilData(allDataUser);
+  }
+}, 1000);
