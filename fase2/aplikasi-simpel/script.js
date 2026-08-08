@@ -11,6 +11,7 @@ const STORAGE_KEY = "data-user";
 
 let allDataUser = getDataUser();
 let idEditUser = null;
+let showPasswords = [];
 
 // function untuk mengirimkan data ke localstorage dan parsing array object ke string
 function saveToStorage(dataUser) {
@@ -25,6 +26,20 @@ function getDataUser() {
 
   // mengembalikkan data untuk ditampilkan
   return getData ? JSON.parse(getData) : [];
+}
+
+// function untuk membuat sistem toggle hide/unhide
+function showPassword(id) {
+  // cek apakah ID sudah ada di dalam penampung
+  if (showPasswords.includes(id)) {
+    // jika sudah ada, hapus ID nya (password nya di hide kembali)
+    showPasswords = showPasswords.filter((user) => user !== id);
+  } else {
+    showPasswords.push(id);
+  }
+
+  // render ulang tampilan UI
+  tampilkanHasilData(allDataUser);
 }
 
 function tampilkanHasilData(arrDataUser) {
@@ -45,13 +60,26 @@ function tampilkanHasilData(arrDataUser) {
 
     const otpAktif = siswaWaktuTOP > 0;
 
+    // cek apakah ID ada di dalam array showPassword
+    const isShowPass = showPasswords.includes(dataUser.id);
+
+    // jika true, tampilkan password asli, jika false, ubah jadi "********"
+    const displayPassword = isShowPass
+      ? dataUser.password
+      : "*".repeat(dataUser.password.length);
+
     li.innerHTML = `
             <div>
                 <p>Name: ${dataUser.name}</p>
                 <p>Usn: ${dataUser.username}</p>
                 <p>Email: ${dataUser.email}</p>
                 <p>Handphone: ${dataUser.handphone}</p>
-                <p>Pass: ${dataUser.password}</p>
+                <p>
+                  Pass: ${displayPassword}
+                  <button class="btn-show-pass" data-id="${dataUser.id}">
+                    ${isShowPass ? "Sembunyikan" : "Tampilkan"}
+                  </button>
+                </p>
                 <p>OTP: ${otpAktif ? `${dataUser.otp}` : "-"} [sisa waktu: ${siswaWaktuTOP} detik]</p>
             </div>
 
@@ -221,6 +249,9 @@ hasilData.addEventListener("click", (e) => {
   }
   if (e.target.classList.contains("btn-otp")) {
     getOTP(id);
+  }
+  if (e.target.classList.contains("btn-show-pass")) {
+    showPassword(id);
   }
 });
 
