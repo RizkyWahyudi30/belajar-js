@@ -14,6 +14,7 @@ function tampilkanData(arrData) {
             <p>Phone: ${user.phone}</p> 
             <button class="btn-detail" data-id="${user.id}">Lihat Detail</button>
 
+            <!-- sebagai wadah post masing user  -->
             <div class="post-container"></div>
         `;
 
@@ -30,7 +31,7 @@ function tampilkanData(arrData) {
         // lagi tertutup / tidak ada isi di dalam post-container
         btnDetail.textContent = "Loading Post...";
         await postUser(user.id, postContainer);
-        btnDetail.textContent = "Tututp Detail";
+        btnDetail.textContent = "Tutup Detail";
       }
     });
 
@@ -46,7 +47,7 @@ async function dataUser() {
   try {
     const resUser = await fetch("https://jsonplaceholder.typicode.com/users");
     if (!resUser.ok) {
-      throw new Error(`http error! status code ${dataUser.status}`);
+      throw new Error(`http error! status code ${resUser.status}`);
     }
 
     const dataUser = await resUser.json();
@@ -72,34 +73,17 @@ async function postUser(userId, container) {
     const ulPost = document.createElement("ul");
 
     dataPosts.forEach((posts) => {
-      const liPost = document.createElement("li");
-
-      liPost.innerHTML = `
-        <h4>Title: ${posts.title}</h4>
-        <p>Body: ${posts.body}</p>
-        <button class="btn-comment">Lihat komentar</button>
-
-        <div class="comment-container"></div>
-      `;
-
-      const btnComment = liPost.querySelector(".btn-comment");
-      const commentContainer = liPost.querySelector(".comment-container");
-
-      btnComment.addEventListener("click", async () => {
-        if (commentContainer.innerHTML !== "") {
-          commentContainer.innerHTML = "";
-          btnComment.textContent = "Lihat komentar";
-        } else {
-          btnComment.textContent = "Loading...";
-          await commentPostUser(posts.id, commentContainer);
-          btnComment.textContent = "Tutup komentar";
-        }
-      });
-
+      const liPost = buatElementPost(posts);
       ulPost.append(liPost);
     });
 
-    container.append(ulPost);
+    // Pasang callback: "kalau ada post baru terbuat, tolong tempel ke ulPost"
+    const formBox = formPost(userId, (postTerbuat) => {
+      const liPostBaru = buatElementPost(postTerbuat);
+      ulPost.prepend(liPostBaru);
+    });
+
+    container.append(formBox, ulPost);
   } catch (err) {
     container.innerHTML = `${err.message}`;
   }
@@ -185,16 +169,16 @@ function formPost(userId, ulPost) {
 
   const form = formBox.querySelector(".form-tambah-post");
 
-  form.addEventListener("click", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const inputTitle = form.querySelector(".input-title");
     const inputBody = form.querySelector(".input-body");
-    const buttonPost = form.querySelector(".btn-tambah-post");
+    const buttonPost = form.querySelector(".btn-submit-post");
 
     const newDataPost = {
-      title: inputTitle,
-      body: inputBody,
+      title: inputTitle.value,
+      body: inputBody.value,
       userId: userId,
     };
 
@@ -217,9 +201,7 @@ function formPost(userId, ulPost) {
 
       const postBaru = await resTambahPost.json();
 
-      // tambahkan post baru diurutan paling atas
-      const liPostBaru = buatElementPost(postBaru);
-      ulPost.append(liPostBaru);
+      ulPost(postBaru);
 
       // menggunakan method .reset() itu mengosongkan field
       form.reset();
