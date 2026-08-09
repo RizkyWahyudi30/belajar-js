@@ -164,5 +164,41 @@ async function postUser(userId, container) {
 Penjelasan:
 
 - `fetch(
-  `https://jsonplaceholder.typicode.com/posts?userId=${userId}`,)`: untuk mengambil data post berdasarkan id user yang dikirim
+`https://jsonplaceholder.typicode.com/posts?userId=${userId}`,)`: untuk mengambil data post berdasarkan id user yang dikirim
 - `container.append(ulPost);`: untuk mengirimkan data HTML yang sudah terisi ke parameter container yang di step sebelum nya berisi template untuk data post
+
+5. Buat fungsi untuk mengambil data comment
+
+```js
+// function untuk mengambil data ata comment dari masing masing
+// post an user
+async function commentPostUser(postId, container) {
+  try {
+    const resComment = await fetch(
+      `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
+    );
+    if (!resComment.ok) throw new Error("gagal memuat");
+    const dataComment = await resComment.json();
+
+    const ulComment = document.createElement("ul");
+
+    dataComment.forEach((comments) => {
+      const liComment = document.createElement("li");
+
+      liComment.innerHTML = `
+        <p>Name: ${comments.name}</p>
+        <p>Email: ${comments.email}</p>
+        <p>Body: ${comments.body}</p>
+      `;
+
+      ulComment.append(liComment);
+    });
+
+    container.append(ulComment);
+  } catch (err) {
+    container.innerHTML = `${err.message}`;
+  }
+}
+```
+
+Penjelasan: code diatas kurang lebih sabar seperti step sebelum nya
