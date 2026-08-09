@@ -160,3 +160,9 @@ async function postUser(userId, container) {
   }
 }
 ```
+
+Penjelasan:
+
+- `fetch(
+  `https://jsonplaceholder.typicode.com/posts?userId=${userId}`,)`: untuk mengambil data post berdasarkan id user yang dikirim
+- `container.append(ulPost);`: untuk mengirimkan data HTML yang sudah terisi ke parameter container yang di step sebelum nya berisi template untuk data post
