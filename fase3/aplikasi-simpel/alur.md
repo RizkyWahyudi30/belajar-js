@@ -95,6 +95,16 @@ function tampilkanData(arrData) {
         btnDetail.textContent = "Tututp Detail";
       }
     });
+    /**
+     *
+     * Inti nya kode diatas ini dipahami nya seperti ini:
+     * Tombol ini digunakan untuk mengubah aksi user di kondisi selanjutnya, bukan di kondisi saat ini
+     *
+     * Jadi:
+     * Saat layar TERTUTUP --> Tombol tulisannya "Lihat Detail" (Menunggu diklik untuk Buka).
+     * Saat layar TERBUKA --> Tombol tulisannya "Tutup Detail" (Menunggu diklik untuk Tutup).
+     *
+     */
 
     listUser.append(li);
   });
@@ -163,8 +173,7 @@ async function postUser(userId, container) {
 
 Penjelasan:
 
-- `fetch(
-`https://jsonplaceholder.typicode.com/posts?userId=${userId}`,)`: untuk mengambil data post berdasarkan id user yang dikirim
+- fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`): untuk mengambil data post berdasarkan id user yang dikirim
 - `container.append(ulPost);`: untuk mengirimkan data HTML yang sudah terisi ke parameter container yang di step sebelum nya berisi template untuk data post
 
 5. Buat fungsi untuk mengambil data comment
@@ -201,4 +210,140 @@ async function commentPostUser(postId, container) {
 }
 ```
 
-Penjelasan: code diatas kurang lebih sabar seperti step sebelum nya
+Penjelasan:
+
+- fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`,): `/${postId}/` bagian postId didapatkan dari parameter postId, data nya di dapat dari function yang menggunakannya sebagai wadah.
+  Pada step 4, baris bagian ini: `await commentPostUser(posts.id, commentContainer);` ini mengirimkan data post.Id ke function commentPostUser
+
+6. Selanjut nya membuat fitur penambahan post (tidak disimpan di storage), berikut script nya:
+   Buat 2 function utama:
+
+```js
+// function untuk membuat template html posts
+function buatElementPost(posts) {}
+
+// function untuk membuat inputan post dan menerima data input yang akan dikirimkan ke template html post
+function formPost(userId, ulPost) {}
+```
+
+Lalu selanjut
+
+- Pada `function buatElementPost()` buat menjadi seperti ini :
+
+```js
+function buatElementPost(posts) {
+  // buat element list
+  const liPost = document.createElement("li");
+
+  // template html untuk post
+  liPost.innerHTML = `
+    <h4>Title: ${posts.title}</h4>
+    <p>Body: ${posts.body}</p>
+    <button class="btn-comment">Lihat komentar</button>
+
+    <div class="comment-container"></div>
+  `;
+
+  // mengambil data commanr
+  const btnComment = liPost.querySelector(".btn-comment");
+  // membuat penampung comment
+  const commentContainer = liPost.querySelector(".comment-container");
+
+  btnComment.addEventListener("click", async () => {
+    if (commentContainer.innerHTML !== "") {
+      commentContainer.innerHTML = "";
+      btnComment.innerHTML = "Lihat Komentar";
+    } else {
+      btnComment.innerHTML = "Loading...";
+      await commentPostUser(posts.id, commentContainer);
+      btnComment.innerHTML = "Tutup detail";
+    }
+  });
+
+  return liPost;
+}
+```
+
+- Pada `function formPost(userId, ulPost)` buat menjadi seperti ini :
+
+```js
+function formPost(userId, ulPost) {
+  const formBox = document.createElement("div");
+
+  // membuat html untuk inputan data nya
+  formBox.innerHTML = `
+    <h3>Tambahkan Post Baru</h3>
+    <form class="form-tambah-post">
+      <div>
+        <label for="input-title">Title: </label>
+        <input type="text" class="input-title" id="input-title" placeholder="Post Title">
+      </div>
+      <div>
+        <label for="input-body">Body: </label>
+        <input type="text" class="input-body" id="input-body" placeholder="Post Body">
+      </div>
+      <button type="submit" class="btn-submit-post">Tambah Post</button>
+    </form>
+  `;
+
+  // mengambil id elemen form di html nya
+  const form = formBox.querySelector(".form-tambah-post");
+
+  // trigger form kalau ketika submit
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // untuk mengambil data input di dalam form
+    const inputTitle = form.querySelector(".input-title");
+    const inputBody = form.querySelector(".input-body");
+
+    // button untuk mengirimkan data nya
+    const buttonPost = form.querySelector(".btn-submit-post");
+
+    // membuat data object nya
+    const newDataPost = {
+      title: inputTitle.value,
+      body: inputBody.value,
+      userId: userId,
+    };
+
+    try {
+      buttonPost.textContent = "Sending...";
+      // agar user tidak bisa terus terusan mengklik ketika sedang mengirimkan data
+      buttonPost.disabled = true;
+
+      // API untuk dengan method POST data
+      const resTambahPost = await fetch(
+        "https://jsonplaceholder.typicode.com/posts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // ubah dari array object ke string biasa agar bisa dibaca
+          body: JSON.stringify(newDataPost),
+        },
+      );
+
+      if (!resTambahPost.ok) throw new Error("Gagal menambah post");
+
+      // ubah lagi data nya menjadi ke bentuk array object
+      const postBaru = await resTambahPost.json();
+
+      //
+      ulPost(postBaru);
+
+      // menggunakan method .reset() itu mengosongkan field
+      form.reset();
+      alert("Post berhasil ditambahkan!");
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      buttonPost.textContent = "Kirim Post";
+      buttonPost.disabled = false;
+    }
+  });
+
+  return formBox;
+}
+```
