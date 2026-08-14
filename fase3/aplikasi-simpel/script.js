@@ -13,6 +13,9 @@ function tampilkanData(arrData) {
             <p>Address: ${user.address.city}, ${user.address.suite}, ${user.address.street}</p>
             <p>Phone: ${user.phone}</p> 
             <button class="btn-detail" data-id="${user.id}">Lihat Detail</button>
+            
+            <!-- untuk lihat total post  -->
+            <p class="total-post"></p>
 
             <!-- sebagai wadah post masing user  -->
             <div class="post-container"></div>
@@ -20,6 +23,7 @@ function tampilkanData(arrData) {
 
     const btnDetail = li.querySelector(".btn-detail");
     const postContainer = li.querySelector(".post-container");
+    const totalPost = li.querySelector(".total-post");
 
     // event click untuk toggle detail
     btnDetail.addEventListener("click", async () => {
@@ -30,7 +34,11 @@ function tampilkanData(arrData) {
       } else {
         // lagi tertutup / tidak ada isi di dalam post-container
         btnDetail.textContent = "Loading Post...";
-        await postUser(user.id, postContainer);
+
+        // ambil total data post users
+        const dataPost = await postUser(user.id, postContainer);
+
+        totalPost.textContent = `Total post: ${dataPost}`;
         btnDetail.textContent = "Tutup Detail";
       }
     });
@@ -84,8 +92,11 @@ async function postUser(userId, container) {
     });
 
     container.append(formBox, ulPost);
+
+    return dataPosts.length;
   } catch (err) {
     container.innerHTML = `${err.message}`;
+    return 0;
   }
 }
 
@@ -128,6 +139,9 @@ function buatElementPost(posts) {
     <h4>Title: ${posts.title}</h4>
     <p>Body: ${posts.body}</p>
     <button class="btn-comment">Lihat komentar</button>
+
+    <!-- lihat total komentar  -->
+    <p class="total-komentar"></p>
 
     <div class="comment-container"></div>
   `;

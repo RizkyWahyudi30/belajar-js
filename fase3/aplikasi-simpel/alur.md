@@ -330,7 +330,8 @@ function formPost(userId, ulPost) {
       // ubah lagi data nya menjadi ke bentuk array object
       const postBaru = await resTambahPost.json();
 
-      //
+      // disclaimer!, beberapa kode diatas akan ada yang diubah
+      // ulPost berisi function callback, postBaru merupakan argumen pengisi nya
       ulPost(postBaru);
 
       // menggunakan method .reset() itu mengosongkan field
@@ -347,3 +348,38 @@ function formPost(userId, ulPost) {
   return formBox;
 }
 ```
+
+Function `formPost` diubah menjadi seperti ini:
+
+```js
+async function postUser(userId, container) {
+  try {
+    const resPost = await fetch(
+      `https://jsonplaceholder.typicode.com/posts?userId=${userId}`,
+    );
+    if (!resPost.ok) throw new Error(`gagal memuat Post`);
+    const dataPosts = await resPost.json();
+
+    const ulPost = document.createElement("ul");
+
+    // =========== Ubah dibagian sini ================
+    dataPosts.forEach((posts) => {
+      const liPost = buatElementPost(posts);
+      ulPost.append(liPost);
+    });
+
+    // Pasang callback: "kalau ada post baru terbuat, tolong tempel ke ulPost"
+    const formBox = formPost(userId, (postTerbuat) => {
+      const liPostBaru = buatElementPost(postTerbuat);
+      ulPost.prepend(liPostBaru);
+    });
+    // =========== Ubah dibagian sini ================
+
+    container.append(formBox, ulPost);
+  } catch (err) {
+    container.innerHTML = `${err.message}`;
+  }
+}
+```
+
+Sekian alur aplikasi nya
