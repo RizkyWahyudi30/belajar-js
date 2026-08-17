@@ -24,6 +24,8 @@ Setiap bab: **Teori → Contoh Kode → Best Practice → Latihan**.
 
 Di bahasa seperti Java/C#, kelas itu **blueprint** yang harus ada duluan sebelum bikin object — ini disebut **class-based OOP**.
 
+Banyak orang belajar OOP JS langsung loncat ke `class`, karena syntax-nya mirip bahasa OOP lain (Java, C#, dll). Masalahnya: `class` di JS itu bukan fitur OOP asli — dia cuma "topeng" yang lebih enak dibaca di atas mekanisme yang sudah ada sejak awal JS diciptakan, yaitu **prototype**. Kalau kamu hafal syntax `class` tanpa paham prototype di baliknya, kamu akan gampang bingung saat ketemu behavior aneh nanti (misal soal this, soal kenapa method "dibagi" antar instance, dll).
+
 JavaScript **beda**. JS itu **prototype-based**: setiap object punya link tersembunyi (`[[Prototype]]`) ke object lain, dan kalau kamu akses properti yang nggak ada di object itu sendiri, JS akan **naik ke prototype-nya** untuk cari. Ini disebut **prototype chain**.
 
 Object literal `{}` adalah cara paling dasar bikin object di JS — tanpa class sama sekali.
@@ -40,10 +42,26 @@ const kucing = {
 kucing.bunyi(); // Milo berkata: Meong
 ```
 
-Setiap object literal otomatis punya prototype `Object.prototype` (itu kenapa kamu bisa pakai `kucing.toString()` padahal nggak pernah kamu definisikan).
+Ini object dengan property (nama, suara) dan method (bersuara). Simpel — tapi masalahnya: kalau kamu punya 100 kucing, kamu harus tulis ulang struktur ini 100 kali. Tidak scalable. Ini masalah yang OOP coba selesaikan — nanti.
 
-```javascript
-console.log(Object.getPrototypeOf(kucing) === Object.prototype); // true
+## Setiap Object di JS Punya "Rantai" ke Object Lain -- Ini Namanya Prototype
+
+Ini bagian intinya. Coba jalankan ini:
+
+```js
+const kucing = { nama: "Miko" };
+
+console.log(kucing.toString()); // "[object Object]"
+```
+
+Pertanyaan penting: dari mana `toString()` ini muncul? Kamu tidak pernah menulis method `toString` di object kucing. Jawabannya: JS **otomatis** menyambungkan setiap object ke sebuah object "induk" bernama `Object.prototype`, yang berisi method-method dasar seperti `toString`, `hasOwnProperty`, dll. Kalau kamu akses property/method yang **tidak ada** di object itu sendiri, JS akan **naik ke atas**, cari di prototype-nya. Kalau masih tidak ketemu, naik lagi ke prototype dari prototype-nya. Ini yang disebut **Prototype Chain**.
+
+```js
+const kucing = { nama: "Miko" };
+
+console.log(kucing.hasOwnProperty("nama")); // true -> "nama" MEMANG ada di kucing sendiri
+console.log(kucing.hasOwnProperty("toString")); // false -> "toString" TIDAK ada di kucing, dia numpang dari prototype
+console.log(Object.getPrototypeOf(kucing) === Object.prototype); // true -> ini pembuktian rantainya
 ```
 
 ### Membuat object dengan prototype custom: `Object.create()`
@@ -66,6 +84,32 @@ console.log(anjing.hasOwnProperty("bunyi")); // false (properti dari prototype)
 ```
 
 **Insight penting:** `anjing` sendiri **tidak punya** method `bunyi`. Saat dipanggil, JS jalan naik ke prototype chain: `anjing` → `hewanProto` → `Object.prototype` → `null`. Ini yang bikin JS hemat memori — banyak object bisa "berbagi" method lewat satu prototype, bukan copy-paste ke tiap object.
+
+📌 Ini poin paling penting di sub-bab ini: **"inheritance" di JS pada dasarnya cuma "menyambungkan" satu object ke object lain lewat prototype chain**, supaya object yang di bawah bisa "meminjam" property/method dari object di atasnya, tanpa harus punya sendiri. Nanti waktu kita sampai ke `class Kucing extends Hewan`, itu cuma syntax yang lebih enak dibaca untuk melakukan hal yang persis sama seperti `Object.create()` ini di balik layar.
+
+## Kesalahan Umum Pemula di Tahap Ini
+
+1. Mengira setiap object punya salinan sendiri dari method di prototype
+
+```js
+const a = Object.create(hewanDasar);
+const b = Object.create(hewanDasar);
+
+console.log(a.makan === b.makan); // true! -> method yang SAMA PERSIS, bukan 2 salinan berbeda
+```
+
+Ini justru keuntungan **prototype — hemat memori**. Kalau kamu punya 1000 kucing, method makan cuma ada 1 kali di memori (di hewanDasar), bukan 1000 salinan.
+
+2. Bingung antara `Object.getPrototypeOf(obj)` dan `obj.prototype`
+
+```js
+const kucing = Object.create(hewanDasar);
+console.log(kucing.prototype); // undefined! -> ini bukan cara akses yang benar
+
+console.log(Object.getPrototypeOf(kucing)); // { makan: [Function] } -> ini cara yang benar
+```
+
+`.prototype` itu property yang **hanya ada di function** (kita bahas ini di sub-bab 2), bukan di object biasa. Untuk object biasa, cara mengecek "siapa induknya" adalah `Object.getPrototypeOf().`
 
 ## 1.2 Best Practice
 
