@@ -236,12 +236,35 @@ const user5 = {
     console.log(`Helo, saya ${this.name}`); // `this` = user, karena dipanggil sebagai user.greet()
   },
   greetArrow: () => {
-    console.log(`Halo, saya ${this.nama}`); // `this` BUKAN user! arrow function ambil `this` dari scope luar
+    console.log(`Halo, saya ${this.nama}`); // `this` BUKAN user! arrow functithison ambil `this` dari scope luar
   },
 };
 
 user5.greet(); // "Halo, saya Dimas"
 user5.greetArrow(); // "Halo, saya undefined"
+
+/**
+ * 
+Alasan perbedaan function biasa dan arrow function, yaitu perbedaan mendasar cara penanganan kata kunci this
+
+1. fungsi biasa (greet): nilai this ditentukan saat fungsi dipanggil (dynamic scope)
+    - Ketika kamu memanggil user5.greet(), JavaScript melihat siapa objek yang ada di sebelah kiri tanda titik (.).
+    - Objek di sebelah kiri titik adalah user5.
+    - Maka, this di dalam fungsi otomatis merujuk ke objek user5.
+    - Hasilnya: this.name --> "Dimas".
+
+2. Arrow function (greetArrow): this tidak bergantung pada siapa yang memanggilnya, melainkan mengambil this dari lingkungan/
+scope di luarnya (lexical scope)
+    - Saat kamu menulis object literal { ... }, kurung kurawal {} tidak membuat scope/lingkungan baru untuk this.
+    - Lingkungan di luar user5 (pada tingkat teratas/global) adalah objek global (di browser: window, 
+    di Node.js: global atau module.exports).
+    - Jadi, this di dalam greetArrow merujuk ke objek global tersebut, bukan ke user5.
+    - Karena di objek global tidak ada properti nama (atau name), hasilnya menjadi undefined.
+
+Jangan gunakan Arrow Function sebagai method utama di dalam objek jika method tersebut perlu membaca properti 
+objek menggunakan this.
+
+ */
 
 // Masalah klasik "this" di callback:
 /**
