@@ -97,6 +97,47 @@ console.log(kopi.tampilkanData === roti.tampilkanData); // true
 kopi.tampilkanData();
 roti.tampilkanData();
 
+// MASALAH: Method di dalam constructor = Boros memori
+// kesalahan ketika awal:
+
+// function Produk(nama, harga) {
+//   this.nama = nama;
+//   this.harga = harga;
+//   this.tampilkanInfo = function () {
+//     console.log(`${this.nama}: ${this.harga}`);
+//   };
+// }
+
+// const pizza = new Produk("Pizza", 10000);
+// const ubi = new Produk("Ubi", 3000);
+
+// console.log(pizza.tampilkanInfo === ubi.tampilkanInfo); // false
+
+/**
+Setiap kali new Produk(...) dipanggil, function tampilkanInfo dibuat ulang dari nol, jadi tiap object punya salinan 
+sendiri-sendiri di memori — walau isinya identik persis. Kalau kamu punya 10.000 produk, itu 10.000 salinan function yang 
+sama, buang-buang memori.
+
+Solusi: Taruh Method di .prototype, Bukan di Dalam Constructor
+
+ */
+function Produk(nama, harga) {
+  this.nama = nama;
+  this.harga = harga;
+}
+
+Produk.prototype.tampilkanInfo = function () {
+  console.log(`${this.nama}: Rp${this.harga}`);
+};
+
+const pizza = new Produk("Pizza", 30000);
+const donut = new Produk("Donut", 10000);
+
+console.log(pizza.tampilkanInfo === donut.tampilkanInfo); // true! -> cuma 1 salinan, dipakai bersama
+
+pizza.tampilkanInfo();
+donut.tampilkanInfo();
+
 /**
  * 
 📌 Aturan praktis yang dipakai di industri: apa yang beda-beda per instance (data) taruh di dalam constructor lewat this.xxx. 
@@ -133,27 +174,3 @@ console.log(user1.createdAt !== user2.createdAt); // true, karena new Date dipan
 
 // Ini "cetakan" yang bisa dipakai berulang-ulang untuk bikin ribuan user, dengan struktur konsisten dan behavior yang
 // dijamin sama, tanpa boros memori.
-
-// MASALAH: Method di dalam constructor = Boros memori
-// kesalahan ketika awal:
-function Produk(nama, harga) {
-  this.nama = nama;
-  this.harga = harga;
-  this.tampilkanInfo = function () {
-    console.log(`${this.nama}: ${this.harga}`);
-  };
-}
-
-const pizza = new Produk("Pizza", 10000);
-const ubi = new Produk("Ubi", 3000);
-
-console.log(pizza.tampilkanInfo === ubi.tampilkanInfo); // false
-
-/**
-Setiap kali new Produk(...) dipanggil, function tampilkanInfo dibuat ulang dari nol, jadi tiap object punya salinan 
-sendiri-sendiri di memori — walau isinya identik persis. Kalau kamu punya 10.000 produk, itu 10.000 salinan function yang 
-sama, buang-buang memori.
-
-Solusi: Taruh Method di .prototype, Bukan di Dalam Constructor
-
- */
