@@ -144,17 +144,17 @@ console.log(stokKopi.statusStok);
 stokKopi.stok = 0;
 console.log(stokKopi.statusStok);
 
-// Kamu sudah tidak sadar menyentuh sedikit konsep encapsulation di sini (menyembunyikan _stok di balik get/set 
+// Kamu sudah tidak sadar menyentuh sedikit konsep encapsulation di sini (menyembunyikan _stok di balik get/set
 // supaya perubahannya selalu tervalidasi) — ini akan kita bahas formal di Sub-bab 4.
 
 /** KESALAHAN UMUM YANG SERING TERJADI */
-// 1. Menambahkan tanda kurung saat memakai get 
-// console.log(stokKopi.stok()); // salah 
+// 1. Menambahkan tanda kurung saat memakai get
+// console.log(stokKopi.stok()); // salah
 // error message: TypeError: stokKopi.stok is not a function
 
 console.log(stokKopi.stok); // seharusnya
 
-// 2. Infinite loop, karena nama property sama dengan nama set 
+// 2. Infinite loop, karena nama property sama dengan nama set
 class Test {
   constructor(harga) {
     this.harga = harga;
@@ -162,7 +162,7 @@ class Test {
   }
 
   set harga(nilai) {
-    this.harga = nilai; 
+    this.harga = nilai;
     // ini juga memanggil 'set harga' lagi, dan lagi, dan lagi...
   }
 }
@@ -171,7 +171,7 @@ class Test {
 /**
 ERROR MESSAGE: 
 this.harga = nilai; 
-               ^
+
 
 RangeError: Maximum call stack size exceeded at set harga
 
