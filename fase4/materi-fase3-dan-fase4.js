@@ -138,7 +138,7 @@ async function main() {
   }
 }
 
-main();
+// main();
 
 /**
 📌 Perhatikan bagaimana cuacaKota() memanggil method lain di class yang sama lewat this.cariKoordinat(...) dan 
@@ -146,3 +146,69 @@ this.ambilCuaca(...) — ini pola orkestrasi yang sama persis dengan yang kamu r
 kemarin, cuma sekarang dibungkus rapi sebagai method-method dalam 1 class, bukan function lepas-lepas.
 
 */
+
+/** Jebakan klasik: this hilang di dalam callback/promise */
+// Ini kesalahan paling umum ketika class digabung dengan async. Ingat konsep this dari Fase 1 (this tergantung
+// bagaimana dipanggil) — masalah ini kembali muncul di konteks async.
+
+// class Counter {
+//   constructor() {
+//     this.jumlah = 0;
+//   }
+
+//   mulaiOtomatis() {
+//     setTimeout(function () {
+//       this.jumlah++;
+//       console.log(this.jumlah);
+//     }, 1000);
+//   }
+// }
+
+// const counter = new Counter();
+// counter.mulaiOtomatis(); // error: Cannot read properties of undefined
+
+/**
+
+Function biasa yang di-passing ke setTimeout kehilangan koneksi this-nya ke instance counter — persis masalah this 
+yang sudah kamu bahas di Fase 1 dulu (kasus button.handleClick dengan setTimeout).
+
+Solusi: pakai arrow function, karena arrow function tidak punya this sendiri — dia "mewarisi" this dari scope 
+di luarnya (yaitu method mulaiOtomatis, yang this-nya memang instance counter):
+
+*/
+
+class Counter {
+  constructor() {
+    this.jumlah = 0;
+  }
+
+  mulaiOtomatis() {
+    setTimeout(() => {
+      this.jumlah++;
+      console.log(this.jumlah);
+    }, 1000);
+  }
+}
+
+const counter = new Counter();
+counter.mulaiOtomatis();
+
+// Ini juga berlaku persis sama untuk async/await di dalam class — walau kasusnya sedikit berbeda karena async method
+// biasanya dipanggil langsung (bukan lewat callback terpisah seperti setTimeout), jadi this biasanya aman selama kamu
+// memanggilnya lewat instance (this.namaMethod()), bukan menyimpannya sebagai referensi lepas:
+
+class Timer {
+  constructor() {
+    this.detik = 0;
+  }
+
+  async mulai() {
+    this.detik++;
+  }
+}
+
+const timer = new Timer();
+timer.mulai; // aman
+
+const fnLepas = timer.mulai;
+// fnLepas(); // TypeError: Cannot read properties of undefined (reading 'detik')
