@@ -178,7 +178,7 @@ class Suhu {
   }
 
   get fahrenheit() {
-    return (this.celcius *= 1.8) + 32;
+    return this.celcius * 1.8 + 32;
   }
 
   set fahrenheit(nilai) {
@@ -278,8 +278,14 @@ class Baterai {
 }
 
 const baterai = new Baterai(100);
-baterai.gunakan(90); // pakai baterai lebih dari yang tersedia
-console.log(baterai.level); // output awal: -50
+
+try {
+  baterai.gunakan(150); // pakai baterai lebih dari yang tersedia
+  console.log(baterai.level);
+} catch (err) {
+  console.log(`Gagal: `, err.message);
+}
+
 // error message
 /**
 D:\coding\javascript\fase4\latihan\lat-bab3.js:263
@@ -291,9 +297,12 @@ Error: Level tidak boleh negatif
 // ini output dari kode yang sudah diperbaiki
 
  */
-
-baterai.cas(50);
-console.log(baterai.level); // output awal: -50
+try {
+  baterai.cas(50);
+  console.log(baterai.level);
+} catch (err) {
+  console.log(`Gagal: `, err.message);
+}
 // error message:
 /**
 D:\coding\javascript\fase4\latihan\lat-bab3.js:266
@@ -311,8 +320,44 @@ Error: Level tidak boleh melebihi kapasitas
 Bikin class Antrian (queue) untuk simulasi antrian nomor tiket:
 • constructor(namaLoket) — mulai dengan daftarAntrian = [] (array kosong) dan nomorSaatIni = 0.
 • Method tambahAntrian(namaCustomer) — nambah customer ke daftarAntrian, nomorSaatIni bertambah 1, dan setiap customer punya nomor tiketnya masing-masing.
-• Method panggilBerikutnya() — mengeluarkan (dan return) customer paling depan dari antrian (ingat: array method yang cocok untuk ambil dari depan sambil menghapusnya — jangan pakai index manual, cari method array yang sesuai).
+• Method panggilBerikutnya() — mengeluarkan (dan return) customer paling depan dari antrian (ingat: array method yang cocok untuk ambil dari depan sambil 
+  menghapusnya — jangan pakai index manual, cari method array yang sesuai).
 • get jumlahMenunggu — return berapa banyak orang yang masih mengantre.
-• Constraint penting: kalau panggilBerikutnya() dipanggil saat antrian kosong, jangan sampai error/crash — return sebuah pesan yang masuk akal, misal "Antrian kosong".
+• Constraint penting: kalau panggilBerikutnya() dipanggil saat antrian kosong, jangan sampai error/crash — return sebuah pesan yang masuk akal, misal 
+  "Antrian kosong".
 
 */
+
+class Antrian {
+  constructor(namaLoket) {
+    this.namaLoket = namaLoket;
+    this.daftarAntrian = [];
+    this.nomorSaatIni = 0;
+  }
+
+  get jumlahMenunggu() {
+    return this.daftarAntrian.length;
+  }
+
+  tambahAntrian(namaCustomer) {
+    this.nomorSaatIni++;
+    this.daftarAntrian.push({ nomor: this.nomorSaatIni, nama: namaCustomer });
+  }
+
+  panggilBerikutnya() {
+    const customer = this.daftarAntrian.shift();
+    return customer ? customer.nama : "Antrian Kosong";
+  }
+}
+
+const loket1 = new Antrian("Loket 1");
+loket1.tambahAntrian("Budi");
+loket1.tambahAntrian("Sinta");
+console.log(loket1.jumlahMenunggu); // 2
+console.log(loket1.panggilBerikutnya()); // harus "Budi" (yang PALING DULU masuk, bukan yang terakhir)
+console.log(loket1.jumlahMenunggu); // 1
+
+console.log(loket1.nomorSaatIni); // 2
+
+const loket2 = new Antrian("Loket 2");
+console.log(loket2.panggilBerikutnya());
