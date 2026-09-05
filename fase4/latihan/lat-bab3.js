@@ -304,3 +304,15 @@ Error: Level tidak boleh melebihi kapasitas
 
 // kalau di tes nya dengan > 100
  */
+
+// 3.7 — Bikin dari nol, sekaligus gabungkan constructor + get/set + method biasa
+
+/**
+Bikin class Antrian (queue) untuk simulasi antrian nomor tiket:
+• constructor(namaLoket) — mulai dengan daftarAntrian = [] (array kosong) dan nomorSaatIni = 0.
+• Method tambahAntrian(namaCustomer) — nambah customer ke daftarAntrian, nomorSaatIni bertambah 1, dan setiap customer punya nomor tiketnya masing-masing.
+• Method panggilBerikutnya() — mengeluarkan (dan return) customer paling depan dari antrian (ingat: array method yang cocok untuk ambil dari depan sambil menghapusnya — jangan pakai index manual, cari method array yang sesuai).
+• get jumlahMenunggu — return berapa banyak orang yang masih mengantre.
+• Constraint penting: kalau panggilBerikutnya() dipanggil saat antrian kosong, jangan sampai error/crash — return sebuah pesan yang masuk akal, misal "Antrian kosong".
+
+*/
