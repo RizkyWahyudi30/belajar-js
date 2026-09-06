@@ -210,5 +210,55 @@ class Timer {
 const timer = new Timer();
 timer.mulai; // aman
 
-const fnLepas = timer.mulai;
+const fnLepas = timer.mulai; // ⚠️ BAHAYA! this sekarang undefined, karena dipanggil TANPA konteks instance
 // fnLepas(); // TypeError: Cannot read properties of undefined (reading 'detik')
+
+/** Contoh Dunia Nyata: Class dengan State Loading, Data, dan Error */
+// Ini pola yang sangat umum di aplikasi nyata (mirip logic yang biasanya ada di balik komponen React,
+// tapi versi vanilla JS):
+
+class UserRepository {
+  constructor() {
+    this.data = null;
+    this.isLoading = false;
+    this.error = false;
+  }
+
+  async ambilUser(id) {
+    this.isLoading = true;
+    this.error = null;
+
+    try {
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/users/${id}`,
+      );
+
+      if (!response.ok) {
+        throw new Error(`User dengan id ${id} tidak ditemukan`);
+      }
+
+      this.data = await response.json();
+    } catch (err) {
+      this.error = err.message;
+      this.data = null;
+    } finally {
+      this.isLoading = false;
+    }
+  }
+}
+
+async function main() {
+  const repo = new UserRepository();
+
+  console.log(repo.isLoading); // false (belum mulai)
+  const promise = repo.ambilUser(1);
+  console.log(repo.isLoading); // true (sedang proses)
+
+  await promise;
+  console.log(repo.isLoading); // false (sudah selesai)
+  console.log(repo.data); // data user atau null kalau error
+  console.log(repo.err); // null, atau pesan error
+}
+
+// 📌 Pola isLoading + data + error sebagai 3 property terpisah ini sangat umum dipakai — nanti kalau kamu belajar React,
+// kamu akan mengenali pola ini persis sebagai fondasi dari konsep "loading state" yang di-manage lewat useState.
