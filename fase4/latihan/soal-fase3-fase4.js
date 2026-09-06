@@ -28,21 +28,21 @@ class PostService {
 
   async ambilSemuaPost() {
     const response = await fetch(`${this.baseURL}/posts`);
-    if (!response.ok) throw new Error("HTTP Error! Error:", response.status);
+    if (!response.ok) throw new Error(`HTTP Error! Error: ${response.status}`);
 
     return await response.json();
   }
 
   async ambilPostById(id) {
     const response = await fetch(`${this.baseURL}/posts/${id}`);
-    if (!response.ok) throw new Error("HTTP Error! Error:", response.status);
+    if (!response.ok) throw new Error(`HTTP Error! Error: ${response.status}`);
 
     return await response.json();
   }
 
   async ambilPostByUserId(userId) {
     const response = await fetch(`${this.baseURL}/posts?userId=${userId}`);
-    if (!response.ok) throw new Error("HTTP Error! Error:", response.status);
+    if (!response.ok) throw new Error(`HTTP Error! Error: ${response.status}`);
 
     return await response.json();
   }
@@ -54,7 +54,7 @@ async function main() {
   const posts = await postService.ambilPostByUserId(1);
   console.log(posts.length); // output 10
 }
-main();
+// main();
 
 // Soal 3.5b — Debug bug this yang hilang
 // Kode ini punya bug klasik yang barusan kita bahas. Temukan, jelaskan kenapa, dan perbaiki:
@@ -102,7 +102,7 @@ class Notifikasi {
 }
 
 const notif = new Notifikasi("Budi");
-notif.ambilPesanBaru(); // output: Budi punya pesan baru: sunt aut facere repellat provident occaecati excepturi optio reprehenderit
+// notif.ambilPesanBaru(); // output: Budi punya pesan baru: sunt aut facere repellat provident occaecati excepturi optio reprehenderit
 
 /**
 Masalah yang diperbaiki: terdapat kesalahan penggunaan, yaitu di setTimeOut menggunakan function biasa yang seharusnya menggunakan
@@ -136,15 +136,50 @@ class ProductService {
   constructor() {
     this.data = null;
     this.isLoading = false;
-    this.error = false;
+    this.error = null;
   }
 
   async ambilUserProdct() {
+    this.isLoading = true;
+    this.error = null;
+
     try {
       const response = await fetch(
         "https://jsonplaceholder.typicode.com/posts",
       );
       if (!response.ok) throw new Error("Post tidak ditemukan");
-    } catch (error) {}
+
+      this.data = await response.json();
+    } catch (error) {
+      this.error = error.message;
+      this.data = null;
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  reset() {
+    this.data = null;
+    this.isLoading = false;
+    this.error = null;
   }
 }
+const produkService = new ProductService();
+
+async function main() {
+  await produkService.ambilUserProdct(); // buat method ini sendiri
+  console.log(produkService.data.length); // harus ada isinya
+  console.log(produkService.error); // harus null (berhasil)
+
+  produkService.reset();
+  console.log(produkService.data); // null lagi
+}
+main();
+
+// output saya
+/**
+100
+null
+null
+
+*/
