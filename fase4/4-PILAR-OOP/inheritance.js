@@ -173,3 +173,44 @@ class User {
     return ["read"];
   }
 }
+
+class Admin extends User {
+  constructor(nama, email, level) {
+    super(nama, email);
+    this.level = level;
+  }
+
+  getPermission() {
+    return [...super.getPermission(), "write", "delete"]; // ambil izin + tambahan
+  }
+}
+
+const user = new User("Budi", "budi@email.com");
+const admin = new Admin("Sinta", "sinta@email.com", "super");
+
+console.log(user.getPermission()); // [ 'read' ]
+console.log(admin.getPermission()); // [ 'read', 'write', 'delete' ]
+
+// Ini pola yang sangat umum dipakai di sistem autentikasi/otorisasi dunia nyata.
+
+/** Kesalahan Umum */
+
+// 1. Lupa super() sama sekali di constructor child class
+/**
+class Kucing extends Hewan {
+  constructor(nama, warnaBulu) {
+    this.warnaBulu = warnaBulu; // ⚠️ Error langsung, super() wajib dipanggil kalau ada constructor sendiri
+  }
+}
+*/
+
+// 2. Inheritance yang "dipaksakan" padahal relasinya tidak masuk akal (over-engineering)
+/**
+class Mobil extends Roda { } // ⚠️ Mobil bukan "jenis dari" Roda, mobil PUNYA roda (relasi "has-a", bukan "is-a")
+
+Aturan praktis: pakai inheritance kalau relasinya "is-a" (Kucing adalah jenis Hewan). Kalau relasinya "has-a" 
+(Mobil punya Roda, tapi bukan jenis dari Roda), sebaiknya pakai composition (Mobil punya property berisi instance Roda), 
+bukan extends. Ini kesalahan desain yang sangat umum di kalangan yang baru belajar OOP — terlalu senang pakai 
+inheritance untuk semua relasi.
+
+*/
