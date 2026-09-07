@@ -102,7 +102,7 @@ class DompetDigital {
     }
 
     // validasi pin baru: harus string, tepat 4 digit angka
-    const validasiPin = typeof pinBaru === "string" && /^\d{4}/.test(pinBaru);
+    const validasiPin = typeof pinBaru === "string" && /^\d{4}$/.test(pinBaru);
 
     if (!validasiPin) {
       throw new Error("PIN harus berupa string dan 4 digit angka");
