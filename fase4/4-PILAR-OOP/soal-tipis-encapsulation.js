@@ -121,3 +121,85 @@ console.log(dompetSatu.bayar(10000, "1234")); // Pembayaran sukses!
 console.log(dompetSatu.saldo); // 140000
 
 console.log(dompetSatu.ubahPin("1234", "2345")); // PIN berhasil diubah
+
+// Soal 3: Hard / Analisis (Bug Hunting)
+/**
+
+Perhatikan kode di bawah ini:
+class Vault {
+  #kodeRahasia;
+
+  constructor(kode) {
+    this.#kodeRahasia = kode;
+  }
+
+  getKode() {
+    return this.#kodeRahasia;
+  }
+}
+
+const myVault = new Vault("XYZ-999");
+
+// Percobaan A
+console.log(myVault.#kodeRahasia);
+
+// Percobaan B
+myVault.#kodeRahasia = "ABC-123";
+
+// Percobaan C
+myVault.kodeRahasia = "12345";
+console.log(myVault.getKode());
+
+Pertanyaan:
+
+1. Apa yang akan terjadi saat Percobaan A dan Percobaan B dijalankan? (Apakah berhasil atau Error? Jenis error-nya apa?)
+2. Pada Percobaan C, kode tersebut tidak error. Mengapa demikian, dan apa output dari console.log(myVault.getKode())? Jelaskan alasannya!
+
+Silakan tulis jawaban kamu untuk ketiga soal di atas! Nanti kita bahas bersama.
+
+*/
+
+class Vault {
+  #kodeRahasia;
+
+  constructor(kode) {
+    this.#kodeRahasia = kode;
+  }
+
+  getKode() {
+    return this.#kodeRahasia;
+  }
+}
+
+const myVault = new Vault("XYZ-999");
+
+// Percobaan A
+// console.log(myVault.#kodeRahasia);
+// error message: Property '#kodeRaahsia' is not accessible outside class 'Vault' because it has a private identifier
+
+// Percobaan B
+// myVault.#kodeRahasia = "ABC-123";
+// error message: Property '#kodeRaahsia' is not accessible outside class 'Vault' because it has a private identifier
+
+// Percobaan C
+myVault.kodeRahasia = "12345";
+console.log(myVault.getKode()); // XYZ-999
+
+// jawaban:
+/**
+1. Apa yang akan terjadi saat Percobaan A dan Percobaan B dijalankan? (Apakah berhasil atau Error? Jenis error-nya apa?)
+penjelasan: akan error, dan error nya itu seperti yang sudah aku beritahukan diatas: Property '#kodeRaahsia' is not 
+accessible outside class 'Vault' because it has a private identifier
+
+2. Pada Percobaan C, kode tersebut tidak error. Mengapa demikian, dan apa output dari console.log(myVault.getKode())? 
+Jelaskan alasannya!
+penjelasan: karena myVault.kodeRahasia itu cara baca nya sama saja seperti ini: this.kodeRahasia, dan juga penulisan nya 
+yang tidak langsung meng-input melalui .#kodeRahasia
+
+jawaban lengkap nya:
+Saat kamu mengeksekusi myVault.kodeRahasia = "12345", JavaScript tidak mengubah private field #kodeRahasia, melainkan membuat properti publik baru bernama kodeRahasia secara dinamis pada objek tersebut.
+
+Nilai #kodeRahasia yang asli di dalam objek tetap aman sebesar "XYZ-999". Maka dari itu, saat method getKode() 
+dipanggil (yang mengembalikan this.#kodeRahasia), nilai yang keluar tetap XYZ-999.
+
+*/
