@@ -35,12 +35,13 @@ class MobilListrik extends Kendaraan {
 
   gass() {
     this.baterai -= 5;
+    super.gass();
     console.log(`Sisa baterai ${this.baterai}%`);
   }
 }
 
 const byd = new MobilListrik("Byd");
-// byd.gass(); // Sisa baterai 95%
+// byd.gass();
 
 // Soal 2: Medium (Sistem Karyawan & Tipe Akses)
 /**
@@ -71,7 +72,7 @@ class Karyawan {
   }
 
   hitungBonus() {
-    return (this.#gajiPokok * 0.1) / 100;
+    return this.#gajiPokok * 0.1;
   }
 }
 
@@ -82,8 +83,100 @@ class Manager extends Karyawan {
   }
 
   hitungBonus() {
-    super.hitungBonus();
+    const bonusDasar = super.hitungBonus(); // tampung hasil dari parent
 
-    return;
+    return bonusDasar + this.tunjanganTeam; // tambahkan dengan tunjangan
   }
 }
+
+const maki = new Manager("Maki", 17000000, 6500000);
+// console.log(maki.hitungBonus());
+
+// Soal 3: Hard / Analisis Design (Bug Hunting & Concept)
+/**
+Perhatikan dua potongan kode di bawah ini:
+
+Kasus A (Troubleshooting Error):
+
+class Bentuk {
+  constructor(warna) {
+    this.warna = warna;
+  }
+}
+
+class Persegi extends Bentuk {
+  constructor(warna, sisi) {
+    this.sisi = sisi;
+    super(warna);
+  }
+}
+
+const box = new Persegi("Merah", 4);
+
+Kasus B (Analisis Relasi / Design Pattern):
+Seorang developer membuat struktur class berikut:
+
+class Mesin {
+  nyalakan() {
+    console.log("Mesin menyala...");
+  }
+}
+
+class Pesawat extends Mesin {
+  terbang() {
+    console.log("Pesawat terbang...");
+  }
+}
+
+1. Pada Kasus A, kode tersebut akan menghasilkan error. Error apa yang terjadi dan bagaimana cara memperbaikinya?
+2. Pada Kasus B, apakah penerapan extends di situ sudah tepat secara konsep OOP (relasi is-a vs has-a)? Jelaskan alasanmu!
+
+*/
+
+// Kasus A
+class Bentuk {
+  constructor(warna) {
+    this.warna = warna;
+  }
+}
+
+class Persegi extends Bentuk {
+  constructor(warna, sisi) {
+    super(warna); // super(...) harus dipanggil duluan
+    this.sisi = sisi;
+  }
+
+  output() {
+    console.log(`Warna: ${this.warna} | sisi: ${this.sisi}`);
+  }
+}
+
+const box = new Persegi("Merah", 4);
+box.output(); // output: Warna: Merah | sisi: 4
+
+// Kasus B
+class Mesin {
+  nyalakan() {
+    console.log("Mesin menyala...");
+  }
+}
+
+class Pesawat {
+  constructor() {
+    this.mesin = new Mesin(); // relasi "has-a" (Pesawat PUNYA Mesin)
+  }
+
+  terbang() {
+    this.mesin.nyalakan();
+    console.log("Pesawat terbang...");
+  }
+}
+
+const air = new Pesawat();
+air.terbang();
+/**
+Output:
+Mesin menyala...
+Pesawat terbang
+
+*/

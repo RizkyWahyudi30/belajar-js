@@ -62,7 +62,7 @@ Contoh Dunia Nyata: Sistem Pembayaran
 */
 
 class MetodePembayaran {
-  proses(jumlah) {
+  proses() {
     throw new Error(`Method proses() harus di-override oleh subclass`);
   }
 }
