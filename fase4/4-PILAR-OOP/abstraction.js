@@ -50,3 +50,72 @@ class Lingkaran extends Bentuk {
 // const bentuk = new Bentuk("apapun"); // ⚠️ Error! tidak boleh langsung
 const lingkaran = new Lingkaran(5);
 console.log(lingkaran.hitungLuas()); // 78.54
+
+// ================================================================================================================= //
+// TAMBAHAN MATERI DARI GEMINI
+
+/** 1. Abstraksi di JavaScript Modern */
+// Di JavaScript modern, Abstraksi biasanya dicapai dengan menggabungkan Encapsulation (menggunakan private method #)
+// dan menyediakannya lewat method publik yang bersih.
+
+class MesinKopi {
+  // 🔒 Private Methods (Detail internal yang RUMIT disembunyikan)
+  #panaskanAir() {
+    console.log("Memanaskan air hingga 90°C...");
+  }
+
+  #gilingKopi() {
+    console.log("Menggiling biji kopi...");
+  }
+
+  #ekstrasi() {
+    console.log("Mengekstraksi espresso...");
+  }
+
+  // 🌐 Public Method (Interface SIMPEL untuk pengguna)
+  buatKopi() {
+    this.#panaskanAir();
+    this.#gilingKopi();
+    this.#ekstrasi();
+    console.log("☕ Kopi nikmat siap disajikan!");
+  }
+}
+
+const mesin = new MesinKopi();
+// Pengguna cukup panggil 1 method simpel ini:
+mesin.buatKopi();
+
+// Pengguna TIDAK BISA (dan tidak perlu) memanggil detail internalnya:
+// mesin.#panaskanAir(); // Error: Private field '#panaskanAir' must be declared in an enclosing class
+
+// 2. Abstract Class (Pola Antarmuka Kontrak)
+// Bahasa seperti Java atau C# punya kata kunci abstract. JavaScript tidak punya kata kunci abstract secara built-in,
+// namun kita bisa menyimulasikannya dengan melemparkan Error di class induk.
+
+// Ini berguna untuk membuat standar / kontrak bahwa setiap class turunan wajib mengimplementasikan method tertentu.
+
+// Class Induk sebagai "Abstract Class" (Tidak boleh di-instantiate langsung)
+class DatabaseService {
+  constructor() {
+    if (this.constructor === DatabaseService) {
+      throw new Error(
+        "Class DatabaseService adalah Abstract Class dan tidak bisa di-instantiate langsung!",
+      );
+    }
+  }
+
+  // Abstract Method (Kontrak wajib)
+  connect() {
+    throw new Error("Method connect() harus di-override!");
+  }
+}
+
+class MyDatabase extends DatabaseService {
+  connect() {
+    console.log("Terhubung ke database MySQL di port 3306...");
+  }
+}
+
+// const db = new DatabaseService(); // Error: Class DatabaseService adalah Abstract Class dan tidak bisa di-instantiate langsung!
+const mysql = new MyDatabase();
+mysql.connect(); // Terhubung ke database MySQL di port 3306...
