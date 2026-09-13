@@ -1,10 +1,11 @@
 import Karakter from "./Karakter.js";
+import { DAMAGE_PENYIHIR, MANA_PENYIHIR } from "../utils/gameConfig.js";
 
 export default class Penyihir extends Karakter {
   constructor(name, hp) {
     super(name, hp);
-    this.damage = 20;
-    this.mana = 3;
+    this.damage = DAMAGE_PENYIHIR;
+    this.mana = MANA_PENYIHIR;
   }
 
   serang(target) {

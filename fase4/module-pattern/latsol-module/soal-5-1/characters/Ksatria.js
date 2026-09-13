@@ -1,9 +1,10 @@
 import Karakter from "./Karakter.js";
+import { DAMAGE_KSATRIA } from "../utils/gameConfig.js";
 
 export default class Ksatria extends Karakter {
   constructor(name, hp) {
     super(name, hp);
-    this.damage = 15;
+    this.damage = DAMAGE_KSATRIA;
   }
 
   serang(target) {
