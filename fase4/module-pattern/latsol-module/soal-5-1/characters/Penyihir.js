@@ -1,5 +1,9 @@
 import Karakter from "./Karakter.js";
-import { DAMAGE_PENYIHIR, MANA_PENYIHIR } from "../utils/gameConfig.js";
+import {
+  DAMAGE_PENYIHIR,
+  MANA_PENYIHIR,
+  hitungSisaHP,
+} from "../utils/gameConfig.js";
 
 export default class Penyihir extends Karakter {
   constructor(name, hp) {
@@ -10,7 +14,7 @@ export default class Penyihir extends Karakter {
 
   serang(target) {
     if (this.mana > 0) {
-      target.hp -= this.damage;
+      target.hp = hitungSisaHP(target.hp, this.damage);
       this.mana -= 1;
       console.log(
         `${this.name}: menyerang ${target.name} sebesar ${this.damage} damage!`,
